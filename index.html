@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Green Budget</title>
+<style>
+:root{
+  --bg1:#0f3d2e;--bg2:#1f6f4a;--bg3:#8fd18a;
+  --leaf:#2e9e5b;--leaf-d:#1b6b3d;--moss:#6fbf73;--cream:#f4fbe9;
+  --ink:#10321f;--soft:#5b7a65;--warn:#e07a3f;--bad:#d94f4f;--good:#2e9e5b;
+  --glass:rgba(255,255,255,.72);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;color:var(--ink);
+  min-height:100vh;overflow-x:hidden;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+  background-attachment:fixed;perspective:1400px;
+}
+/* ---------- 3D background ---------- */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;transform-style:preserve-3d}
+.blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.45;transition:transform .2s ease-out}
+.b1{width:420px;height:420px;background:#a8e6a1;top:-120px;left:-100px}
+.b2{width:360px;height:360px;background:#3fbf7f;bottom:-120px;right:-80px}
+.b3{width:260px;height:260px;background:#d7f5b1;top:40%;left:55%}
+.leaf{position:absolute;top:-60px;font-size:28px;opacity:.85;animation:fall linear infinite;
+  transform-style:preserve-3d;filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
+@keyframes fall{
+  0%{transform:translate3d(0,-10vh,0) rotate3d(1,1,0,0deg) rotateZ(0)}
+  50%{transform:translate3d(40px,50vh,120px) rotate3d(1,1,0,180deg) rotateZ(120deg)}
+  100%{transform:translate3d(-30px,110vh,-80px) rotate3d(1,1,0,360deg) rotateZ(260deg)}
+}
+/* ---------- layout ---------- */
+.wrap{position:relative;z-index:1;max-width:980px;margin:auto;padding:18px 14px 80px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 16px;color:var(--cream)}
+header h1{margin:0;font-size:clamp(26px,5vw,40px);letter-spacing:.5px;
+  text-shadow:0 1px 0 #1b6b3d,0 2px 0 #1b6b3d,0 3px 0 #155a33,0 4px 0 #155a33,0 8px 14px rgba(0,0,0,.35)}
+header .logo{font-size:44px;display:inline-block;animation:sway 4s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes sway{0%,100%{transform:rotateZ(-8deg) rotateY(-20deg)}50%{transform:rotateZ(8deg) rotateY(20deg)}}
+.tools{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---------- 3D cards ---------- */
+.card{
+  background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.7);border-radius:20px;padding:16px;margin:14px 0;
+  box-shadow:0 1px 0 #fff inset,0 12px 0 -6px rgba(27,107,61,.35),0 24px 40px rgba(0,0,0,.28);
+  transform-style:preserve-3d;transition:transform .15s ease-out,box-shadow .3s;
+  will-change:transform;animation:rise .6s both;
+}
+.card:hover{box-shadow:0 1px 0 #fff inset,0 16px 0 -6px rgba(27,107,61,.4),0 34px 50px rgba(0,0,0,.34)}
+.card>*{transform:translateZ(20px)}
+@keyframes rise{from{opacity:0;transform:translateY(30px) rotateX(18deg)}to{opacity:1}}
+h2{margin:0 0 10px;font-size:18px}
+.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+
+/* ---------- inputs & 3D buttons ---------- */
+input,select{
+  font:inherit;font-size:16px;padding:10px 12px;margin:3px 0;border-radius:12px;
+  border:2px solid #cfe8c9;background:#fff;color:var(--ink);width:100%;outline:none;
+  box-shadow:inset 0 3px 6px rgba(0,0,0,.08);transition:border-color .2s,box-shadow .2s;
+}
+input:focus,select:focus{border-color:var(--leaf);box-shadow:inset 0 3px 6px rgba(0,0,0,.08),0 0 0 4px rgba(46,158,91,.2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn{
+  font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:14px;padding:10px 16px;margin:3px 0;
+  color:#fff;background:linear-gradient(180deg,#46c277,var(--leaf));
+  box-shadow:0 6px 0 var(--leaf-d),0 12px 18px rgba(0,0,0,.28);
+  transform:translateY(0) translateZ(30px);transition:transform .1s,box-shadow .1s,filter .2s;
+}
+.btn:hover{filter:brightness(1.08);transform:translateY(-2px) translateZ(40px)}
+.btn:active{transform:translateY(5px) translateZ(10px);box-shadow:0 1px 0 var(--leaf-d),0 3px 6px rgba(0,0,0,.3)}
+.btn.sec{background:linear-gradient(180deg,#fff,#e2f3dc);color:var(--leaf-d);box-shadow:0 6px 0 #b6d9ae,0 12px 18px rgba(0,0,0,.2)}
+.btn.warn{background:linear-gradient(180deg,#f19a63,var(--warn));box-shadow:0 6px 0 #a8501f,0 12px 18px rgba(0,0,0,.28)}
+.btn.sm{padding:6px 10px;font-size:14px;border-radius:10px;box-shadow:0 4px 0 var(--leaf-d),0 8px 12px rgba(0,0,0,.2)}
+.btn.sm.sec{box-shadow:0 4px 0 #b6d9ae,0 8px 12px rgba(0,0,0,.15)}
+.btn.sm.warn{box-shadow:0 4px 0 #a8501f,0 8px 12px rgba(0,0,0,.2)}
+.btn.sm:active{transform:translateY(3px) translateZ(10px);box-shadow:0 1px 0 var(--leaf-d)}
+.icon{background:none;border:0;cursor:pointer;font-size:18px;padding:4px 6px;border-radius:8px;transition:transform .2s}
+.icon:hover{transform:scale(1.3) rotate(10deg);background:rgba(0,0,0,.06)}
+
+/* ---------- hero: plant + totals ---------- */
+.hero{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:center}
+@media(max-width:600px){.hero{grid-template-columns:1fr;justify-items:center}}
+.plantbox{width:200px;height:230px;perspective:600px;display:grid;place-items:center}
+.plant{width:170px;height:210px;transform-style:preserve-3d;animation:spin 14s linear infinite}
+@keyframes spin{0%{transform:rotateY(-25deg)}50%{transform:rotateY(25deg)}100%{transform:rotateY(-25deg)}}
+.plant .lf{transform-origin:85px 140px;transition:transform .8s cubic-bezier(.3,1.6,.5,1),fill .8s}
+.plant .stem{transition:d .8s}
+.msg{font-weight:700;margin:0 0 8px}
+.tot{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:600px){.tot{grid-template-columns:repeat(2,1fr)}}
+.tot>div{
+  background:linear-gradient(160deg,#fff,#e6f6df);border-radius:14px;padding:10px 6px;text-align:center;
+  box-shadow:0 5px 0 #b9dcb1,0 10px 16px rgba(0,0,0,.15);transform:translateZ(25px);
+}
+.tot small{display:block;color:var(--soft);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.tot b{font-size:19px;word-break:break-all}
+.bar{height:16px;border-radius:99px;background:#d9ecd3;margin-top:12px;overflow:hidden;box-shadow:inset 0 3px 5px rgba(0,0,0,.18)}
+.bar i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,#8fd18a,var(--leaf));transition:width .8s cubic-bezier(.3,1.3,.5,1),background .4s;
+  box-shadow:0 0 12px rgba(46,158,91,.6)}
+.bar.over i{background:linear-gradient(90deg,#f19a63,var(--bad))}
+.neg{color:var(--bad)}
+
+/* ---------- categories ---------- */
+.cat{position:relative}
+.cathead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cathead .name{font-size:18px;font-weight:800}
+.cathead .sp{margin-left:auto}
+.catnums{font-size:14px;color:var(--soft);margin:4px 0}
+.exp{display:flex;align-items:center;gap:8px;padding:8px 10px;margin-top:6px;border-radius:12px;
+  background:#f1faeb;box-shadow:0 3px 0 #cfe6c8;animation:pop .35s both}
+@keyframes pop{from{opacity:0;transform:scale(.8) rotateX(40deg)}to{opacity:1}}
+.exp span.amt{margin-left:auto;font-weight:800}
+.exp small{color:var(--soft)}
+.addexp{display:grid;grid-template-columns:1.4fr 1fr auto;gap:6px;margin-top:10px;align-items:center}
+@media(max-width:520px){.addexp{grid-template-columns:1fr 1fr}.addexp .btn{grid-column:1/-1}}
+.chip{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;color:#fff;background:var(--good)}
+.chip.over{background:var(--bad)}.chip.near{background:var(--warn)}
+.empty{text-align:center;color:var(--soft);padding:20px}
+.empty .big{font-size:56px;display:block;animation:sway 3s ease-in-out infinite}
+
+/* ---------- modal & toast ---------- */
+.modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:rgba(8,40,25,.65);backdrop-filter:blur(4px);perspective:900px}
+.modal.on{display:grid}
+.dialog{background:var(--cream);border-radius:22px;padding:20px;width:min(92vw,400px);
+  box-shadow:0 30px 60px rgba(0,0,0,.5);animation:flip .5s both;transform-style:preserve-3d}
+@keyframes flip{from{opacity:0;transform:rotateX(-70deg) translateY(40px)}to{opacity:1}}
+.dialog h3{margin:0 0 6px}
+.toast{position:fixed;left:50%;bottom:22px;z-index:60;transform:translate(-50%,120px);background:#0f3d2e;color:#fff;
+  padding:12px 18px;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.4);transition:transform .4s cubic-bezier(.3,1.5,.5,1);max-width:90vw}
+.toast.on{transform:translate(-50%,0)}
+.note{background:#fff3c9;border-radius:14px;padding:10px 12px;margin:10px 0;box-shadow:0 4px 0 #ecd98a}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="bg" id="bg">
+  <div class="blob b1" data-d="30"></div><div class="blob b2" data-d="-40"></div><div class="blob b3" data-d="20"></div>
+</div>
+
+<div class="wrap">
+  <header>
+    <span class="logo">🌿</span>
+    <h1>Green Budget</h1>
+    <div class="tools">
+      <input type="month" id="month" style="width:auto" aria-label="Month">
+      <button class="btn sec sm" id="btnXl">⬇ Excel</button>
+    </div>
+  </header>
+
+  <div id="banner"></div>
+
+  <!-- Hero: plant + totals -->
+  <section class="card" data-tilt>
+    <div class="hero">
+      <div class="plantbox">
+        <svg class="plant" viewBox="0 0 170 210" id="plant" aria-label="Budget plant">
+          <defs>
+            <linearGradient id="pot" x1="0" x2="1"><stop offset="0" stop-color="#c9784a"/><stop offset=".5" stop-color="#e49a6a"/><stop offset="1" stop-color="#a85f38"/></linearGradient>
+            <radialGradient id="lg" cx=".3" cy=".3"><stop offset="0" stop-color="#8fe28f"/><stop offset="1" stop-color="#2e9e5b"/></radialGradient>
+          </defs>
+          <ellipse cx="85" cy="200" rx="52" ry="8" fill="rgba(0,0,0,.25)"/>
+          <path id="stem" d="M85 150 C85 120 85 90 85 60" stroke="#2a7d46" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <g id="leaves">
+            <path class="lf" data-r="-62" d="M85 140 C40 135 28 105 40 90 C65 90 80 110 85 140Z" fill="url(#lg)"/>
+            <path class="lf" data-r="62"  d="M85 140 C130 135 142 105 130 90 C105 90 90 110 85 140Z" fill="url(#lg)"/>
+            <path class="lf" data-r="-38" d="M85 110 C50 100 42 70 55 58 C75 62 85 85 85 110Z" fill="url(#lg)"/>
+            <path class="lf" data-r="38"  d="M85 110 C120 100 128 70 115 58 C95 62 85 85 85 110Z" fill="url(#lg)"/>
+            <path class="lf" data-r="-12" d="M85 85 C60 70 62 40 80 25 C95 42 92 65 85 85Z" fill="url(#lg)"/>
+            <path class="lf" data-r="12"  d="M85 85 C110 70 108 40 90 25 C75 42 78 65 85 85Z" fill="url(#lg)"/>
+          </g>
+          <path d="M45 148 H125 L116 196 H54Z" fill="url(#pot)"/>
+          <rect x="40" y="140" width="90" height="14" rx="5" fill="#d98a5a"/>
+        </svg>
+      </div>
+      <div>
+        <p class="msg" id="msg">Set your budget to plant your seed 🌱</p>
+        <div class="tot">
+          <div><small>Budget</small><b id="tB">0</b></div>
+          <div><small>Spent</small><b id="tS">0</b></div>
+          <div><small>Left</small><b id="tL">0</b></div>
+          <div><small>Unplanned</small><b id="tU">0</b></div>
+        </div>
+        <div class="bar" id="bar"><i id="barfill"></i></div>
+        <div class="row2" style="margin-top:10px">
+          <input id="budgetIn" type="number" inputmode="decimal" min="0" placeholder="Monthly budget">
+          <button class="btn" id="btnBudget">Save budget</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Add category -->
+  <section class="card" data-tilt>
+    <h2>🌱 New category</h2>
+    <div class="row2">
+      <input id="cn" placeholder="e.g. Groceries">
+      <input id="cb" type="number" inputmode="decimal" min="0" placeholder="Amount for it">
+    </div>
+    <button class="btn" id="btnCat">Add category</button>
+  </section>
+
+  <div id="list"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal"><div class="dialog" id="dialog"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const uid = () => Math.random().toString(36).slice(2, 10);
+const key = m => "greenbudget:" + m;
+const fmt = n => Number(n || 0).toLocaleString(undefined, {maximumFractionDigits: 2});
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today = () => new Date().toISOString().slice(0, 10);
+let doc = null;
+
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+
+/* ---------------- storage ---------------- */
+function months() {
+  try { return Object.keys(localStorage).filter(k => k.startsWith("greenbudget:")).map(k => k.slice(12)).sort(); }
+  catch (e) { return []; }
+}
+function load() {
+  const m = $("month").value;
+  let raw = null;
+  try { raw = localStorage.getItem(key(m)); } catch (e) {}
+  if (raw) doc = JSON.parse(raw);
+  else {
+    // new month: copy last month's budget & categories with fresh (empty) expenses
+    const prev = months().filter(x => x < m).pop();
+    let p = null;
+    if (prev) p = JSON.parse(localStorage.getItem(key(prev)));
+    doc = {
+      id: m,
+      budget: p ? p.budget : 0,
+      categories: p ? p.categories.map(c => ({id: uid(), name: c.name, limit: c.limit, expenses: []})) : []
+    };
+  }
+  $("budgetIn").value = doc.budget || "";
+  render(); banner();
+}
+function save() {
+  try { localStorage.setItem(key(doc.id), JSON.stringify(doc)); }
+  catch (e) { toast("Could not save – browser storage is blocked."); }
+  render();
+}
+
+/* ---------------- maths ---------------- */
+const catSpent = c => c.expenses.reduce((s, e) => s + +e.amount, 0);
+function totals() {
+  const spent = doc.categories.reduce((s, c) => s + catSpent(c), 0);
+  const planned = doc.categories.reduce((s, c) => s + +c.limit, 0);
+  return {budget: +doc.budget, spent, left: doc.budget - spent, planned, unplanned: doc.budget - planned};
+}
+
+/* ---------------- render ---------------- */
+function render() {
+  const t = totals();
+  $("tB").textContent = fmt(t.budget);
+  $("tS").textContent = fmt(t.spent);
+  $("tL").textContent = fmt(t.left);
+  $("tL").className = t.left < 0 ? "neg" : "";
+  $("tU").textContent = fmt(t.unplanned);
+  $("tU").className = t.unplanned < 0 ? "neg" : "";
+
+  const pctUsed = t.budget > 0 ? Math.min(100, t.spent / t.budget * 100) : 0;
+  $("barfill").style.width = pctUsed + "%";
+  $("bar").classList.toggle("over", t.left < 0);
+
+  // plant health: 1 = full budget left, 0 = nothing left
+  const health = t.budget > 0 ? Math.max(0, Math.min(1, t.left / t.budget)) : 0.5;
+  paintPlant(health, t.budget > 0);
+
+  let m = "Set your budget to plant your seed 🌱";
+  if (t.budget > 0) {
+    if (t.left < 0) m = "Over budget by " + fmt(-t.left) + " – edit your budget or trim spending 🥀";
+    else if (health < .2) m = "Running low – your plant needs care 🍂";
+    else if (health < .5) m = "Half the budget used – steady growth 🌿";
+    else m = "Lovely and green – plenty left 🌳";
+  }
+  $("msg").textContent = m;
+
+  if (!doc.categories.length) {
+    $("list").innerHTML = `<div class="card empty"><span class="big">🪴</span>No categories yet. Add one above, like Groceries or Electricity.</div>`;
+  } else {
+    $("list").innerHTML = doc.categories.map(c => {
+      const sp = catSpent(c), left = c.limit - sp;
+      const pct = c.limit > 0 ? sp / c.limit * 100 : (sp > 0 ? 101 : 0);
+      const chip = left < 0 ? `<span class="chip over">Over by ${fmt(-left)}</span>`
+        : pct >= 80 ? `<span class="chip near">${fmt(left)} left</span>`
+        : `<span class="chip">${fmt(left)} left</span>`;
+      return `<section class="card cat" data-tilt>
+        <div class="cathead">
+          <span class="name">🍃 ${esc(c.name)}</span>${chip}
+          <span class="sp">
+            <button class="icon" title="Edit" onclick="editCat('${c.id}')">✏️</button>
+            <button class="icon" title="Delete" onclick="delCat('${c.id}')">🗑️</button>
+          </span>
+        </div>
+        <div class="catnums">Budget ${fmt(c.limit)} · Spent ${fmt(sp)} · Left <b class="${left < 0 ? "neg" : ""}">${fmt(left)}</b></div>
+        <div class="bar ${left < 0 ? "over" : ""}"><i style="width:${Math.min(100, pct)}%"></i></div>
+        ${c.expenses.map(e => `<div class="exp"><span>${esc(e.note)} <small>${esc(e.date)}</small></span>
+          <span class="amt">${fmt(e.amount)}</span>
+          <button class="icon" title="Remove" onclick="delExp('${c.id}','${e.id}')">✕</button></div>`).join("")}
+        <div class="addexp">
+          <input id="en-${c.id}" placeholder="What did you buy?">
+          <input id="ea-${c.id}" type="number" inputmode="decimal" min="0" placeholder="Amount">
+          <button class="btn sm" onclick="addExp('${c.id}')">+ Spend</button>
+        </div>
+      </section>`;
+    }).join("");
+  }
+  bindTilt();
+}
+
+function paintPlant(h, hasBudget) {
+  const leaves = document.querySelectorAll("#leaves .lf");
+  leaves.forEach((l, i) => {
+    const r = +l.dataset.r;
+    // wilt: leaves droop outward & shrink as health falls
+    const droop = (1 - h) * (r < 0 ? -55 : 55);
+    const s = 0.45 + 0.55 * h;
+    l.style.transform = `rotate(${droop}deg) scale(${s})`;
+    l.style.fill = h < .25 ? "#b7a24a" : h < .5 ? "#7fc15a" : "";
+    l.style.fill = "";
+    l.setAttribute("fill", h < .25 ? "#b8a04a" : h < .5 ? "#7cbf5b" : "url(#lg)");
+  });
+  const top = 60 + (1 - h) * 45;
+  $("stem").setAttribute("d", `M85 150 C85 120 85 ${(150 + top) / 2} 85 ${top}`);
+}
+
+/* ---------------- actions ---------------- */
+$("btnBudget").onclick = () => {
+  const v = parseFloat($("budgetIn").value);
+  if (isNaN(v) || v < 0) return toast("Enter a valid budget amount.");
+  doc.budget = v; save(); toast("Budget saved 🌱");
+  const t = totals();
+  if (t.unplanned < 0) toast("Your categories add up to more than the budget by " + fmt(-t.unplanned));
+};
+$("btnCat").onclick = () => {
+  const n = $("cn").value.trim(), b = parseFloat($("cb").value);
+  if (!n) return toast("Give the category a name.");
+  if (isNaN(b) || b < 0) return toast("Enter the amount for this category.");
+  doc.categories.push({id: uid(), name: n, limit: b, expenses: []});
+  $("cn").value = $("cb").value = "";
+  save();
+  const t = totals();
+  if (t.unplanned < 0) askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
+};
+function addExp(cid) {
+  const c = doc.categories.find(x => x.id === cid);
+  const note = $("en-" + cid).value.trim() || "Expense";
+  const amt = parseFloat($("ea-" + cid).value);
+  if (isNaN(amt) || amt <= 0) return toast("Enter an amount.");
+  const beforeT = totals().left, beforeC = c.limit - catSpent(c);
+  c.expenses.push({id: uid(), note, amount: amt, date: today()});
+  save();
+  const t = totals(), left = c.limit - catSpent(c);
+  if (t.left < 0 && beforeT >= 0) {
+    askRaiseBudget("You have spent " + fmt(t.spent) + ", which is more than your monthly budget of " + fmt(t.budget) + ".", t.spent);
+  } else if (left < 0 && beforeC >= 0) {
+    askRaiseCat(c, "“" + c.name + "” is over its budget of " + fmt(c.limit) + " by " + fmt(-left) + ".");
+  } else toast("Added. " + fmt(t.left) + " left this month.");
+}
+function delExp(cid, eid) {
+  const c = doc.categories.find(x => x.id === cid);
+  c.expenses = c.expenses.filter(e => e.id !== eid); save();
+}
+function delCat(cid) {
+  const c = doc.categories.find(x => x.id === cid);
+  openModal(`<h3>Delete “${esc(c.name)}”?</h3><p>Its ${c.expenses.length} expense(s) will be removed too.</p>
+    <button class="btn warn" id="yes">Yes, delete</button> <button class="btn sec" id="no">Keep it</button>`);
+  $("yes").onclick = () => { doc.categories = doc.categories.filter(x => x.id !== cid); closeModal(); save(); };
+  $("no").onclick = closeModal;
+}
+function editCat(cid) {
+  const c = doc.categories.find(x => x.id === cid);
+  openModal(`<h3>Edit category</h3>
+    <input id="m-n" value="${esc(c.name)}"><input id="m-b" type="number" inputmode="decimal" min="0" value="${c.limit}">
+    <button class="btn" id="ok">Save</button> <button class="btn sec" id="no">Cancel</button>`);
+  $("ok").onclick = () => {
+    const n = $("m-n").value.trim(), b = parseFloat($("m-b").value);
+    if (!n || isNaN(b) || b < 0) return toast("Check the name and amount.");
+    c.name = n; c.limit = b; closeModal(); save();
+  };
+  $("no").onclick = closeModal;
+}
+function askRaiseBudget(reason, suggested) {
+  openModal(`<h3>🥀 Over budget</h3><p>${esc(reason)}</p><p>Set a new monthly budget:</p>
+    <input id="m-b" type="number" inputmode="decimal" min="0" value="${Math.ceil(suggested)}">
+    <button class="btn" id="ok">Update budget</button> <button class="btn sec" id="no">Leave it</button>`);
+  $("ok").onclick = () => {
+    const v = parseFloat($("m-b").value);
+    if (isNaN(v) || v < 0) return toast("Enter a valid amount.");
+    doc.budget = v; $("budgetIn").value = v; closeModal(); save(); toast("Budget updated 🌳");
+  };
+  $("no").onclick = () => { closeModal(); toast("Okay, budget left as it is."); };
+}
+function askRaiseCat(c, reason) {
+  const need = Math.ceil(catSpent(c));
+  openModal(`<h3>🍂 Category over budget</h3><p>${esc(reason)}</p><p>New amount for “${esc(c.name)}”:</p>
+    <input id="m-b" type="number" inputmode="decimal" min="0" value="${need}">
+    <button class="btn" id="ok">Update</button> <button class="btn sec" id="no">Leave it</button>`);
+  $("ok").onclick = () => {
+    const v = parseFloat($("m-b").value);
+    if (isNaN(v) || v < 0) return toast("Enter a valid amount.");
+    c.limit = v; closeModal(); save();
+    const t = totals();
+    if (t.unplanned < 0) askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
+  };
+  $("no").onclick = closeModal;
+}
+
+/* ---------------- excel ---------------- */
+function exportExcel(m) {
+  m = m || $("month").value;
+  const d = m === doc.id ? doc : JSON.parse(localStorage.getItem(key(m)) || "null");
+  if (!d) return toast("Nothing to save for this month yet.");
+  if (typeof XLSX === "undefined") return toast("Excel library not loaded. Check your internet and reload.");
+  const rows = [["Category", "Category budget", "Item", "Amount", "Date"]];
+  let spent = 0, planned = 0;
+  d.categories.forEach(c => {
+    planned += +c.limit;
+    if (!c.expenses.length) rows.push([c.name, +c.limit, "", "", ""]);
+    c.expenses.forEach(e => { spent += +e.amount; rows.push([c.name, +c.limit, e.note, +e.amount, e.date]); });
+  });
+  rows.push([], ["Monthly budget", +d.budget], ["Total spent", spent], ["Left", d.budget - spent], ["Planned in categories", planned]);
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws["!cols"] = [{wch:22},{wch:16},{wch:24},{wch:12},{wch:12}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, m);
+  XLSX.writeFile(wb, "budget-" + m + ".xlsx");
+  try { localStorage.setItem("greenexported:" + m, "1"); } catch (e) {}
+  banner();
+}
+$("btnXl").onclick = () => exportExcel();
+function banner() {
+  const m = $("month").value, prev = months().filter(x => x < m).pop();
+  let done = false; try { done = !!localStorage.getItem("greenexported:" + prev); } catch (e) {}
+  $("banner").innerHTML = prev && !done
+    ? `<div class="note">🍂 ${prev} is finished. <button class="btn sm" onclick="exportExcel('${prev}')">Download ${prev} Excel</button></div>` : "";
+}
+
+/* ---------------- modal / toast ---------------- */
+function openModal(html) { $("dialog").innerHTML = html; $("modal").classList.add("on"); const i = $("dialog").querySelector("input"); if (i) setTimeout(() => i.focus(), 50); }
+function closeModal() { $("modal").classList.remove("on"); }
+$("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+let tt;
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 3200); }
+
+/* ---------------- 3D effects ---------------- */
+function bindTilt() {
+  document.querySelectorAll("[data-tilt]").forEach(el => {
+    if (el._t) return; el._t = 1;
+    el.addEventListener("mousemove", e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      el.style.transform = `perspective(900px) rotateX(${(-y * 7).toFixed(2)}deg) rotateY(${(x * 9).toFixed(2)}deg) translateZ(8px)`;
+    });
+    el.addEventListener("mouseleave", () => el.style.transform = "");
+  });
+}
+// parallax blobs
+document.addEventListener("mousemove", e => {
+  const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+  document.querySelectorAll(".blob").forEach(b => {
+    const d = +b.dataset.d; b.style.transform = `translate3d(${x * d * 2}px,${y * d * 2}px,0)`;
+  });
+});
+// phone tilt
+window.addEventListener("deviceorientation", e => {
+  if (e.gamma == null) return;
+  const x = e.gamma / 90, y = (e.beta || 0) / 180;
+  document.querySelectorAll(".blob").forEach(b => { const d = +b.dataset.d; b.style.transform = `translate3d(${x * d * 2}px,${y * d * 2}px,0)`; });
+});
+// falling 3D leaves
+(function () {
+  const bg = $("bg"), set = ["🍃", "🌿", "🍀", "🌱", "🍂"];
+  for (let i = 0; i < 14; i++) {
+    const l = document.createElement("span");
+    l.className = "leaf"; l.textContent = set[i % set.length];
+    l.style.left = Math.random() * 100 + "vw";
+    l.style.fontSize = 18 + Math.random() * 26 + "px";
+    l.style.animationDuration = 10 + Math.random() * 14 + "s";
+    l.style.animationDelay = -Math.random() * 20 + "s";
+    bg.appendChild(l);
+  }
+})();
+
+/* ---------------- start ---------------- */
+$("month").value = new Date().toISOString().slice(0, 7);
+$("month").addEventListener("change", load);
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.tagName === "INPUT" && !$("modal").classList.contains("on")) {
+    const id = e.target.id;
+    if (id === "budgetIn") $("btnBudget").click();
+    else if (id === "cn" || id === "cb") $("btnCat").click();
+    else if (id.startsWith("en-") || id.startsWith("ea-")) addExp(id.slice(3));
+  } else if (e.key === "Enter" && $("modal").classList.contains("on") && $("ok")) $("ok").click();
+  else if (e.key === "Escape") closeModal();
+});
+load();
+</script>
+</body>
+</html>
