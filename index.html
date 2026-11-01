@@ -17,7 +17,7 @@ body{
   font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;color:var(--ink);
   min-height:100vh;overflow-x:hidden;
   background:linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));
-  background-attachment:fixed;perspective:1400px;
+  background-attachment:fixed;
 }
 /* ---------- 3D background ---------- */
 .bg{position:fixed;inset:0;z-index:0;pointer-events:none;transform-style:preserve-3d}
@@ -26,14 +26,14 @@ body{
 .b2{width:360px;height:360px;background:#3fbf7f;bottom:-120px;right:-80px}
 .b3{width:260px;height:260px;background:#d7f5b1;top:40%;left:55%}
 .leaf{position:absolute;top:-60px;font-size:28px;opacity:.85;animation:fall linear infinite;
-  transform-style:preserve-3d;filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
+  transform-style:preserve-3d}
 @keyframes fall{
   0%{transform:translate3d(0,-10vh,0) rotate3d(1,1,0,0deg) rotateZ(0)}
   50%{transform:translate3d(40px,50vh,120px) rotate3d(1,1,0,180deg) rotateZ(120deg)}
   100%{transform:translate3d(-30px,110vh,-80px) rotate3d(1,1,0,360deg) rotateZ(260deg)}
 }
 /* ---------- layout ---------- */
-.wrap{position:relative;z-index:1;max-width:980px;margin:auto;padding:18px 14px 80px}
+.wrap{position:relative;z-index:1;max-width:980px;margin:auto;padding:18px 14px 80px;perspective:1400px}
 header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 16px;color:var(--cream)}
 header h1{margin:0;font-size:clamp(26px,5vw,40px);letter-spacing:.5px;
   text-shadow:0 1px 0 #1b6b3d,0 2px 0 #1b6b3d,0 3px 0 #155a33,0 4px 0 #155a33,0 8px 14px rgba(0,0,0,.35)}
@@ -50,7 +50,7 @@ header .logo{font-size:44px;display:inline-block;animation:sway 4s ease-in-out i
   will-change:transform;animation:rise .6s both;
 }
 .card:hover{box-shadow:0 1px 0 #fff inset,0 16px 0 -6px rgba(27,107,61,.4),0 34px 50px rgba(0,0,0,.34)}
-.card>*{transform:translateZ(20px)}
+button,.btn,.icon,input,select{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 @keyframes rise{from{opacity:0;transform:translateY(30px) rotateX(18deg)}to{opacity:1}}
 h2{margin:0 0 10px;font-size:18px}
 .grid{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}
@@ -68,16 +68,16 @@ input:focus,select:focus{border-color:var(--leaf);box-shadow:inset 0 3px 6px rgb
   font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:14px;padding:10px 16px;margin:3px 0;
   color:#fff;background:linear-gradient(180deg,#46c277,var(--leaf));
   box-shadow:0 6px 0 var(--leaf-d),0 12px 18px rgba(0,0,0,.28);
-  transform:translateY(0) translateZ(30px);transition:transform .1s,box-shadow .1s,filter .2s;
+  transition:transform .1s,box-shadow .1s,filter .2s;
 }
-.btn:hover{filter:brightness(1.08);transform:translateY(-2px) translateZ(40px)}
-.btn:active{transform:translateY(5px) translateZ(10px);box-shadow:0 1px 0 var(--leaf-d),0 3px 6px rgba(0,0,0,.3)}
+.btn:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 var(--leaf-d),0 3px 6px rgba(0,0,0,.3)}
 .btn.sec{background:linear-gradient(180deg,#fff,#e2f3dc);color:var(--leaf-d);box-shadow:0 6px 0 #b6d9ae,0 12px 18px rgba(0,0,0,.2)}
 .btn.warn{background:linear-gradient(180deg,#f19a63,var(--warn));box-shadow:0 6px 0 #a8501f,0 12px 18px rgba(0,0,0,.28)}
 .btn.sm{padding:6px 10px;font-size:14px;border-radius:10px;box-shadow:0 4px 0 var(--leaf-d),0 8px 12px rgba(0,0,0,.2)}
 .btn.sm.sec{box-shadow:0 4px 0 #b6d9ae,0 8px 12px rgba(0,0,0,.15)}
 .btn.sm.warn{box-shadow:0 4px 0 #a8501f,0 8px 12px rgba(0,0,0,.2)}
-.btn.sm:active{transform:translateY(3px) translateZ(10px);box-shadow:0 1px 0 var(--leaf-d)}
+.btn.sm:active{transform:translateY(3px);box-shadow:0 1px 0 var(--leaf-d)}
 .icon{background:none;border:0;cursor:pointer;font-size:18px;padding:4px 6px;border-radius:8px;transition:transform .2s}
 .icon:hover{transform:scale(1.3) rotate(10deg);background:rgba(0,0,0,.06)}
 
@@ -94,7 +94,7 @@ input:focus,select:focus{border-color:var(--leaf);box-shadow:inset 0 3px 6px rgb
 @media(max-width:600px){.tot{grid-template-columns:repeat(2,1fr)}}
 .tot>div{
   background:linear-gradient(160deg,#fff,#e6f6df);border-radius:14px;padding:10px 6px;text-align:center;
-  box-shadow:0 5px 0 #b9dcb1,0 10px 16px rgba(0,0,0,.15);transform:translateZ(25px);
+  box-shadow:0 5px 0 #b9dcb1,0 10px 16px rgba(0,0,0,.15);
 }
 .tot small{display:block;color:var(--soft);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
 .tot b{font-size:19px;word-break:break-all}
@@ -215,14 +215,14 @@ input:focus,select:focus{border-color:var(--leaf);box-shadow:inset 0 3px 6px rgb
 <div class="modal" id="modal"><div class="dialog" id="dialog"></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+window.addEventListener("error", e => { try { toast("Something went wrong: " + (e.message || "error")); } catch (_) {} });
 const $ = id => document.getElementById(id);
 const uid = () => Math.random().toString(36).slice(2, 10);
 const key = m => "greenbudget:" + m;
 const fmt = n => Number(n || 0).toLocaleString(undefined, {maximumFractionDigits: 2});
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
 let doc = null;
 
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
@@ -236,12 +236,12 @@ function load() {
   const m = $("month").value;
   let raw = null;
   try { raw = localStorage.getItem(key(m)); } catch (e) {}
-  if (raw) doc = JSON.parse(raw);
-  else {
+  try { doc = raw ? JSON.parse(raw) : null; } catch (e) { doc = null; }
+  if (!doc || !Array.isArray(doc.categories)) {
     // new month: copy last month's budget & categories with fresh (empty) expenses
     const prev = months().filter(x => x < m).pop();
     let p = null;
-    if (prev) p = JSON.parse(localStorage.getItem(key(prev)));
+    try { if (prev) p = JSON.parse(localStorage.getItem(key(prev))); } catch (e) { p = null; }
     doc = {
       id: m,
       budget: p ? p.budget : 0,
@@ -428,7 +428,6 @@ function exportExcel(m) {
   m = m || $("month").value;
   const d = m === doc.id ? doc : JSON.parse(localStorage.getItem(key(m)) || "null");
   if (!d) return toast("Nothing to save for this month yet.");
-  if (typeof XLSX === "undefined") return toast("Excel library not loaded. Check your internet and reload.");
   const rows = [["Category", "Category budget", "Item", "Amount", "Date"]];
   let spent = 0, planned = 0;
   d.categories.forEach(c => {
@@ -437,15 +436,43 @@ function exportExcel(m) {
     c.expenses.forEach(e => { spent += +e.amount; rows.push([c.name, +c.limit, e.note, +e.amount, e.date]); });
   });
   rows.push([], ["Monthly budget", +d.budget], ["Total spent", spent], ["Left", d.budget - spent], ["Planned in categories", planned]);
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws["!cols"] = [{wch:22},{wch:16},{wch:24},{wch:12},{wch:12}];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, m);
-  XLSX.writeFile(wb, "budget-" + m + ".xlsx");
-  try { localStorage.setItem("greenexported:" + m, "1"); } catch (e) {}
-  banner();
+  toast("Preparing Excel…");
+  loadXlsx().then(() => {
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws["!cols"] = [{wch:22},{wch:16},{wch:24},{wch:12},{wch:12}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, m);
+    XLSX.writeFile(wb, "budget-" + m + ".xlsx");
+    markExported(m); toast("Excel downloaded ⬇");
+  }).catch(() => {
+    // weak or no internet: save a CSV instead (opens in Excel) – needs no library
+    downloadCsv(rows, m); markExported(m);
+    toast("Internet is weak, so it was saved as a CSV file (opens in Excel).");
+  });
+}
+function markExported(m) { try { localStorage.setItem("greenexported:" + m, "1"); } catch (e) {} banner(); }
+function loadXlsx() {
+  return new Promise((res, rej) => {
+    if (window.XLSX) return res();
+    const s = document.createElement("script");
+    const t = setTimeout(() => rej(new Error("timeout")), 8000);
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    s.onload = () => { clearTimeout(t); window.XLSX ? res() : rej(new Error("missing")); };
+    s.onerror = () => { clearTimeout(t); rej(new Error("load")); };
+    document.head.appendChild(s);
+  });
+}
+function downloadCsv(rows, m) {
+  const csv = "\ufeff" + rows.map(r => r.map(v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"').join(",")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], {type: "text/csv;charset=utf-8"}));
+  a.download = "budget-" + m + ".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 $("btnXl").onclick = () => exportExcel();
+// fetch the Excel library quietly in the background so the page itself never waits for it
+window.addEventListener("load", () => setTimeout(() => { loadXlsx().catch(() => {}); }, 2000));
 function banner() {
   const m = $("month").value, prev = months().filter(x => x < m).pop();
   let done = false; try { done = !!localStorage.getItem("greenexported:" + prev); } catch (e) {}
@@ -548,7 +575,7 @@ window.addEventListener("deviceorientation", e => {
 // falling 3D leaves
 (function () {
   const bg = $("bg"), set = ["🍃", "🌿", "🍀", "🌱", "🍂"];
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 8; i++) {
     const l = document.createElement("span");
     l.className = "leaf"; l.textContent = set[i % set.length];
     l.style.left = Math.random() * 100 + "vw";
@@ -560,7 +587,7 @@ window.addEventListener("deviceorientation", e => {
 })();
 
 /* ---------------- start ---------------- */
-$("month").value = new Date().toISOString().slice(0, 7);
+$("month").value = today().slice(0, 7);
 $("month").addEventListener("change", load);
 document.addEventListener("keydown", e => {
   if (e.key === "Enter" && e.target.tagName === "INPUT" && !$("modal").classList.contains("on")) {
@@ -571,7 +598,7 @@ document.addEventListener("keydown", e => {
   } else if (e.key === "Enter" && $("modal").classList.contains("on") && $("ok")) $("ok").click();
   else if (e.key === "Escape") closeModal();
 });
-load();
+try { load(); } catch (err) { toast("Could not load saved data: " + err.message); }
 </script>
 </body>
 </html>
