@@ -150,6 +150,9 @@ input:focus,select:focus{border-color:var(--leaf);box-shadow:inset 0 3px 6px rgb
     <div class="tools">
       <input type="month" id="month" style="width:auto" aria-label="Month">
       <button class="btn sec sm" id="btnXl">⬇ Excel</button>
+      <button class="btn sec sm" id="btnBackup">💾 Backup</button>
+      <button class="btn sec sm" id="btnRestore">📂 Restore</button>
+      <input type="file" id="restoreFile" accept=".json,application/json" style="display:none">
     </div>
   </header>
 
@@ -449,6 +452,66 @@ function banner() {
   $("banner").innerHTML = prev && !done
     ? `<div class="note">🍂 ${prev} is finished. <button class="btn sm" onclick="exportExcel('${prev}')">Download ${prev} Excel</button></div>` : "";
 }
+
+/* ---------------- backup & restore ---------------- */
+function backupAll() {
+  const ms = months();
+  if (!ms.length) return toast("Nothing to back up yet.");
+  const out = {app: "green-budget", version: 1, exportedAt: new Date().toISOString(), months: {}};
+  ms.forEach(m => { try { out.months[m] = JSON.parse(localStorage.getItem(key(m))); } catch (e) {} });
+  const blob = new Blob([JSON.stringify(out, null, 2)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "green-budget-backup-" + today() + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast("Backup saved 💾 (" + ms.length + " month" + (ms.length > 1 ? "s" : "") + ")");
+}
+function validDoc(d) {
+  return d && typeof d === "object" && Array.isArray(d.categories) && !isNaN(+d.budget) &&
+    d.categories.every(c => c && typeof c.name === "string" && !isNaN(+c.limit) && Array.isArray(c.expenses) &&
+      c.expenses.every(e => e && !isNaN(+e.amount)));
+}
+function pickRestore() { $("restoreFile").value = ""; $("restoreFile").click(); }
+$("restoreFile").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    let data;
+    try { data = JSON.parse(r.result); } catch (err) { return toast("That file isn't a valid backup."); }
+    if (!data || data.app !== "green-budget" || !data.months || typeof data.months !== "object")
+      return toast("That file isn't a Green Budget backup.");
+    const keys = Object.keys(data.months).filter(m => /^\d{4}-\d{2}$/.test(m) && validDoc(data.months[m])).sort();
+    if (!keys.length) return toast("No valid months found in that backup.");
+    const mname = m => new Date(+m.slice(0, 4), +m.slice(5, 7) - 1, 1).toLocaleDateString(undefined, {month: "long", year: "numeric"});
+    const has = m => { try { return !!localStorage.getItem(key(m)); } catch (err) { return false; } };
+    const spentOf = d => d.categories.reduce((s, c) => s + c.expenses.reduce((a, e) => a + +e.amount, 0), 0);
+    const items = keys.map(m => {
+      const d = data.months[m];
+      return `<li><b>${esc(mname(m))}</b> – ${d.categories.length} categories, spent ${fmt(spentOf(d))}` +
+        (has(m) ? ` <span class="chip near">replaces current</span>` : ` <span class="chip">new</span>`) + `</li>`;
+    }).join("");
+    openModal(`<h3>📂 Restore backup?</h3>
+      <p>This backup contains:</p>
+      <ul style="padding-left:18px;margin:6px 0;max-height:34vh;overflow:auto">${items}</ul>
+      <p>Only these months are changed. Every other month on this phone stays as it is.</p>
+      <button class="btn" id="ok">Restore</button> <button class="btn sec" id="no">Cancel</button>`);
+    $("ok").onclick = () => {
+      try {
+        keys.forEach(m => { const d = data.months[m]; d.id = m; localStorage.setItem(key(m), JSON.stringify(d)); });
+      } catch (err) { closeModal(); return toast("Could not restore – browser storage is blocked."); }
+      closeModal();
+      $("month").value = keys[keys.length - 1];   // show the latest restored month
+      load(); toast("Restored " + keys.length + " month(s) 🌳 Showing " + mname(keys[keys.length - 1]));
+    };
+    $("no").onclick = closeModal;
+  };
+  r.onerror = () => toast("Could not read that file.");
+  r.readAsText(f);
+});
+$("btnBackup").onclick = backupAll;
+$("btnRestore").onclick = pickRestore;
 
 /* ---------------- modal / toast ---------------- */
 function openModal(html) { $("dialog").innerHTML = html; $("modal").classList.add("on"); const i = $("dialog").querySelector("input"); if (i) setTimeout(() => i.focus(), 50); }
