@@ -2,246 +2,405 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Green Budget</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Green Budget – Monthly Budget &amp; Bill Tracker</title>
+<meta name="description" content="Set a monthly budget, add categories like groceries and bills, and track every expense. A free, private budget tracker that works great on any phone.">
+<meta name="theme-color" content="#0f3d2e">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="index,follow">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Green Budget">
+<link rel="canonical" href="https://aunt-budget.vercel.app/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌿%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Green Budget">
+<meta property="og:title" content="Green Budget – Monthly Budget &amp; Bill Tracker">
+<meta property="og:description" content="Set a monthly budget, add categories and track every expense. Private, free and made for phones.">
+<meta property="og:url" content="https://aunt-budget.vercel.app/">
 <style>
 :root{
   --bg1:#0f3d2e;--bg2:#1f6f4a;--bg3:#8fd18a;
-  --leaf:#2e9e5b;--leaf-d:#1b6b3d;--moss:#6fbf73;--cream:#f4fbe9;
-  --ink:#10321f;--soft:#5b7a65;--warn:#e07a3f;--bad:#d94f4f;--good:#2e9e5b;
-  --glass:rgba(255,255,255,.72);
+  --leaf:#2e9e5b;--leaf-d:#17703c;--cream:#f4fbe9;
+  --ink:#10321f;--soft:#4f6f5a;--warn:#b8530f;--bad:#c93d3d;--good:#1f7a45;
+  --glass:rgba(255,255,255,.9);
 }
-*{box-sizing:border-box}
-html,body{margin:0}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{margin:0;max-width:100%}
 body{
-  font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;color:var(--ink);
-  min-height:100vh;overflow-x:hidden;
-  background:linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+  font-family:"Trebuchet MS","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;color:var(--ink);
+  min-height:100vh;min-height:100dvh;overflow-x:hidden;line-height:1.4;
+  background:#1f6f4a linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));
   background-attachment:fixed;
+  overflow-wrap:break-word;
 }
-/* ---------- 3D background ---------- */
-.bg{position:fixed;inset:0;z-index:0;pointer-events:none;transform-style:preserve-3d}
-.blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.45;transition:transform .2s ease-out}
+@supports (overflow:clip){html,body{overflow-x:clip}}
+body.noscroll{overflow:hidden}
+img,svg{max-width:100%}
+:focus-visible{outline:3px solid #ffd54a;outline-offset:2px}
+
+/* ---------- background (decorative, never affects layout) ---------- */
+.bg{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.45;transition:transform .25s ease-out}
 .b1{width:420px;height:420px;background:#a8e6a1;top:-120px;left:-100px}
 .b2{width:360px;height:360px;background:#3fbf7f;bottom:-120px;right:-80px}
 .b3{width:260px;height:260px;background:#d7f5b1;top:40%;left:55%}
-.leaf{position:absolute;top:-60px;font-size:28px;opacity:.85;animation:fall linear infinite;
-  transform-style:preserve-3d}
+.leaf{position:absolute;top:-60px;font-size:28px;opacity:.85;animation:fall linear infinite}
 @keyframes fall{
   0%{transform:translate3d(0,-10vh,0) rotate3d(1,1,0,0deg) rotateZ(0)}
-  50%{transform:translate3d(40px,50vh,120px) rotate3d(1,1,0,180deg) rotateZ(120deg)}
-  100%{transform:translate3d(-30px,110vh,-80px) rotate3d(1,1,0,360deg) rotateZ(260deg)}
+  50%{transform:translate3d(40px,50vh,0) rotate3d(1,1,0,180deg) rotateZ(120deg)}
+  100%{transform:translate3d(-30px,110vh,0) rotate3d(1,1,0,360deg) rotateZ(260deg)}
 }
+
 /* ---------- layout ---------- */
-.wrap{position:relative;z-index:1;max-width:980px;margin:auto;padding:18px 14px 80px;perspective:1400px}
-header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 16px;color:var(--cream)}
-header h1{margin:0;font-size:clamp(26px,5vw,40px);letter-spacing:.5px;
-  text-shadow:0 1px 0 #1b6b3d,0 2px 0 #1b6b3d,0 3px 0 #155a33,0 4px 0 #155a33,0 8px 14px rgba(0,0,0,.35)}
-header .logo{font-size:44px;display:inline-block;animation:sway 4s ease-in-out infinite;transform-origin:50% 100%}
-@keyframes sway{0%,100%{transform:rotateZ(-8deg) rotateY(-20deg)}50%{transform:rotateZ(8deg) rotateY(20deg)}}
-.tools{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-
-/* ---------- 3D cards ---------- */
-.card{
-  background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.7);border-radius:20px;padding:16px;margin:14px 0;
-  box-shadow:0 1px 0 #fff inset,0 12px 0 -6px rgba(27,107,61,.35),0 24px 40px rgba(0,0,0,.28);
-  transform-style:preserve-3d;transition:transform .15s ease-out,box-shadow .3s;
-  will-change:transform;animation:rise .6s both;
+.wrap{
+  position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;
+  padding:max(16px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(40px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
+  perspective:1400px;
 }
-.card:hover{box-shadow:0 1px 0 #fff inset,0 16px 0 -6px rgba(27,107,61,.4),0 34px 50px rgba(0,0,0,.34)}
-button,.btn,.icon,input,select{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-@keyframes rise{from{opacity:0;transform:translateY(30px) rotateX(18deg)}to{opacity:1}}
-h2{margin:0 0 10px;font-size:18px}
-.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}
-@media(max-width:760px){.grid{grid-template-columns:1fr}}
+header{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin:4px 0 14px;color:var(--cream)}
+header h1{
+  margin:0;flex:1 1 auto;min-width:0;font-size:clamp(24px,7vw,40px);letter-spacing:.5px;line-height:1.1;
+  text-shadow:0 1px 0 #1b6b3d,0 2px 0 #1b6b3d,0 3px 0 #155a33,0 4px 0 #155a33,0 8px 14px rgba(0,0,0,.35)
+}
+header .logo{font-size:clamp(34px,10vw,44px);display:inline-block;animation:sway 4s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes sway{0%,100%{transform:rotateZ(-8deg) rotateY(-20deg)}50%{transform:rotateZ(8deg) rotateY(20deg)}}
+.tools{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;max-width:100%}
+.tools .monthin{width:auto;flex:1 1 150px;min-width:0;max-width:100%}
 
-/* ---------- inputs & 3D buttons ---------- */
+/* ---------- cards ---------- */
+.card{
+  background:var(--glass);border:1px solid rgba(255,255,255,.7);border-radius:20px;padding:16px;margin:14px 0;
+  box-shadow:0 1px 0 #fff inset,0 10px 0 -5px rgba(27,107,61,.35),0 18px 30px rgba(0,0,0,.25);
+  transition:transform .15s ease-out,box-shadow .3s;min-width:0;
+}
+@media (hover:hover) and (pointer:fine){
+  .card{background:rgba(255,255,255,.74);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .card:hover{box-shadow:0 1px 0 #fff inset,0 14px 0 -5px rgba(27,107,61,.4),0 30px 46px rgba(0,0,0,.32)}
+}
+.intro .card{animation:rise .6s both}
+@keyframes rise{from{opacity:0;transform:translateY(24px) rotateX(14deg)}to{opacity:1}}
+h2{margin:0 0 10px;font-size:18px}
+
+/* ---------- inputs & buttons ---------- */
+button,.btn,.icon,input,select{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 input,select{
-  font:inherit;font-size:16px;padding:10px 12px;margin:3px 0;border-radius:12px;
-  border:2px solid #cfe8c9;background:#fff;color:var(--ink);width:100%;outline:none;
+  font:inherit;font-size:16px;padding:10px 12px;margin:3px 0;border-radius:12px;min-height:46px;
+  border:2px solid #b9d9b2;background:#fff;color:var(--ink);width:100%;min-width:0;outline:none;
   box-shadow:inset 0 3px 6px rgba(0,0,0,.08);transition:border-color .2s,box-shadow .2s;
 }
-input:focus,select:focus{border-color:var(--leaf);box-shadow:inset 0 3px 6px rgba(0,0,0,.08),0 0 0 4px rgba(46,158,91,.2)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input:focus,select:focus{border-color:var(--leaf);box-shadow:inset 0 3px 6px rgba(0,0,0,.08),0 0 0 4px rgba(46,158,91,.25)}
+input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,.22)!important;animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .btn{
-  font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:14px;padding:10px 16px;margin:3px 0;
-  color:#fff;background:linear-gradient(180deg,#46c277,var(--leaf));
-  box-shadow:0 6px 0 var(--leaf-d),0 12px 18px rgba(0,0,0,.28);
-  transition:transform .1s,box-shadow .1s,filter .2s;
+  font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:14px;padding:10px 16px;margin:3px 0;min-height:46px;
+  color:#fff;background:linear-gradient(180deg,#1f8f50,var(--leaf-d));
+  box-shadow:0 5px 0 #0f4a28,0 10px 16px rgba(0,0,0,.25);
+  transition:transform .1s,box-shadow .1s,filter .2s;max-width:100%;
 }
-.btn:hover{filter:brightness(1.08);transform:translateY(-2px)}
-.btn:active{transform:translateY(5px);box-shadow:0 1px 0 var(--leaf-d),0 3px 6px rgba(0,0,0,.3)}
-.btn.sec{background:linear-gradient(180deg,#fff,#e2f3dc);color:var(--leaf-d);box-shadow:0 6px 0 #b6d9ae,0 12px 18px rgba(0,0,0,.2)}
-.btn.warn{background:linear-gradient(180deg,#f19a63,var(--warn));box-shadow:0 6px 0 #a8501f,0 12px 18px rgba(0,0,0,.28)}
-.btn.sm{padding:6px 10px;font-size:14px;border-radius:10px;box-shadow:0 4px 0 var(--leaf-d),0 8px 12px rgba(0,0,0,.2)}
-.btn.sm.sec{box-shadow:0 4px 0 #b6d9ae,0 8px 12px rgba(0,0,0,.15)}
-.btn.sm.warn{box-shadow:0 4px 0 #a8501f,0 8px 12px rgba(0,0,0,.2)}
-.btn.sm:active{transform:translateY(3px);box-shadow:0 1px 0 var(--leaf-d)}
-.icon{background:none;border:0;cursor:pointer;font-size:18px;padding:4px 6px;border-radius:8px;transition:transform .2s}
-.icon:hover{transform:scale(1.3) rotate(10deg);background:rgba(0,0,0,.06)}
+@media (hover:hover){.btn:hover{filter:brightness(1.1);transform:translateY(-2px)}}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #0f4a28,0 3px 6px rgba(0,0,0,.3)}
+.btn.sec{background:linear-gradient(180deg,#fff,#e2f3dc);color:#12552f;box-shadow:0 5px 0 #a9cfa1,0 10px 16px rgba(0,0,0,.18)}
+.btn.sec:active{box-shadow:0 1px 0 #a9cfa1}
+.btn.warn{background:linear-gradient(180deg,#d9691f,var(--warn));box-shadow:0 5px 0 #7c3607,0 10px 16px rgba(0,0,0,.25)}
+.btn.warn:active{box-shadow:0 1px 0 #7c3607}
+.btn.sm{padding:6px 12px;font-size:14px;border-radius:12px;min-height:42px;box-shadow:0 4px 0 #0f4a28,0 8px 12px rgba(0,0,0,.2)}
+.btn.sm.sec{box-shadow:0 4px 0 #a9cfa1,0 8px 12px rgba(0,0,0,.15)}
+.btn.sm.warn{box-shadow:0 4px 0 #7c3607,0 8px 12px rgba(0,0,0,.2)}
+.btn.sm:active{transform:translateY(3px);box-shadow:0 1px 0 #0f4a28}
+.btn.sm.sec:active{box-shadow:0 1px 0 #a9cfa1}
+.icon{
+  background:none;border:0;cursor:pointer;font-size:18px;min-width:42px;min-height:42px;padding:4px;border-radius:10px;
+  display:inline-flex;align-items:center;justify-content:center;transition:transform .2s;flex:none;
+}
+@media (hover:hover){.icon:hover{transform:scale(1.25) rotate(10deg);background:rgba(0,0,0,.06)}}
+.icon:active{background:rgba(0,0,0,.1)}
 
 /* ---------- hero: plant + totals ---------- */
-.hero{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:center}
-@media(max-width:600px){.hero{grid-template-columns:1fr;justify-items:center}}
-.plantbox{width:200px;height:230px;perspective:600px;display:grid;place-items:center}
+.hero{display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px;align-items:center}
+.plantbox{width:min(200px,100%);height:230px;perspective:600px;display:grid;place-items:center}
 .plant{width:170px;height:210px;transform-style:preserve-3d;animation:spin 14s linear infinite}
 @keyframes spin{0%{transform:rotateY(-25deg)}50%{transform:rotateY(25deg)}100%{transform:rotateY(-25deg)}}
-.plant .lf{transform-origin:85px 140px;transition:transform .8s cubic-bezier(.3,1.6,.5,1),fill .8s}
-.plant .stem{transition:d .8s}
+.plant .lf{transform-origin:85px 140px;transition:transform .8s cubic-bezier(.3,1.6,.5,1)}
 .msg{font-weight:700;margin:0 0 8px}
-.tot{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-@media(max-width:600px){.tot{grid-template-columns:repeat(2,1fr)}}
+.tot{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .tot>div{
-  background:linear-gradient(160deg,#fff,#e6f6df);border-radius:14px;padding:10px 6px;text-align:center;
-  box-shadow:0 5px 0 #b9dcb1,0 10px 16px rgba(0,0,0,.15);
+  background:linear-gradient(160deg,#fff,#e6f6df);border-radius:14px;padding:10px 6px;text-align:center;min-width:0;
+  box-shadow:0 4px 0 #b9dcb1,0 8px 14px rgba(0,0,0,.14);
 }
-.tot small{display:block;color:var(--soft);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
-.tot b{font-size:19px;word-break:break-all}
+.tot small{display:block;color:var(--soft);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+.tot b{display:block;font-size:clamp(15px,4.4vw,19px);overflow-wrap:anywhere;line-height:1.2}
 .bar{height:16px;border-radius:99px;background:#d9ecd3;margin-top:12px;overflow:hidden;box-shadow:inset 0 3px 5px rgba(0,0,0,.18)}
 .bar i{display:block;height:100%;width:0;border-radius:99px;
-  background:linear-gradient(90deg,#8fd18a,var(--leaf));transition:width .8s cubic-bezier(.3,1.3,.5,1),background .4s;
+  background:linear-gradient(90deg,#8fd18a,var(--leaf));transition:width .8s cubic-bezier(.3,1.3,.5,1);
   box-shadow:0 0 12px rgba(46,158,91,.6)}
 .bar.over i{background:linear-gradient(90deg,#f19a63,var(--bad))}
 .neg{color:var(--bad)}
 
 /* ---------- categories ---------- */
-.cat{position:relative}
-.cathead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.cathead .name{font-size:18px;font-weight:800}
-.cathead .sp{margin-left:auto}
-.catnums{font-size:14px;color:var(--soft);margin:4px 0}
-.exp{display:flex;align-items:center;gap:8px;padding:8px 10px;margin-top:6px;border-radius:12px;
-  background:#f1faeb;box-shadow:0 3px 0 #cfe6c8;animation:pop .35s both}
-@keyframes pop{from{opacity:0;transform:scale(.8) rotateX(40deg)}to{opacity:1}}
-.exp span.amt{margin-left:auto;font-weight:800}
-.exp small{color:var(--soft)}
-.addexp{display:grid;grid-template-columns:1.4fr 1fr auto;gap:6px;margin-top:10px;align-items:center}
-@media(max-width:520px){.addexp{grid-template-columns:1fr 1fr}.addexp .btn{grid-column:1/-1}}
-.chip{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;color:#fff;background:var(--good)}
+.cathead{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap}
+.cathead .name{font-size:18px;font-weight:800;flex:1 1 140px;min-width:0;overflow-wrap:anywhere}
+.cathead .sp{margin-left:auto;display:flex;flex:none}
+.catnums{font-size:14px;color:var(--soft);margin:4px 0;overflow-wrap:anywhere}
+.exp{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;margin-top:6px;border-radius:12px;background:#f1faeb;box-shadow:0 3px 0 #cfe6c8}
+.exp .what{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.exp .what small{display:block;color:var(--soft)}
+.exp .amt{margin-left:auto;font-weight:800;flex:none;max-width:45%;overflow-wrap:anywhere;text-align:right}
+.addexp{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;gap:6px;margin-top:10px;align-items:center}
+.chip{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;color:#fff;background:var(--good);white-space:nowrap}
 .chip.over{background:var(--bad)}.chip.near{background:var(--warn)}
 .empty{text-align:center;color:var(--soft);padding:20px}
 .empty .big{font-size:56px;display:block;animation:sway 3s ease-in-out infinite}
 
+/* ---------- notices ---------- */
+.note{background:#fff3c9;border-radius:14px;padding:10px 12px;margin:10px 0;box-shadow:0 4px 0 #ecd98a;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.note.err{background:#ffe0dc;box-shadow:0 4px 0 #e8aaa3}
+.note .btn{margin:0}
+
+/* ---------- footer ---------- */
+.foot{margin:26px 0 0;padding:12px 14px 14px;border-radius:18px;background:rgba(10,45,32,.85);color:var(--cream);text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.foot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 4px}
+.foot a,.linkbtn{
+  color:#d7f5b1;font:inherit;font-weight:700;background:none;border:0;padding:8px 12px;min-height:44px;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;border-radius:10px;display:inline-flex;align-items:center
+}
+.foot p{margin:4px 0 0;font-size:13px;opacity:.9}
+
 /* ---------- modal & toast ---------- */
-.modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:rgba(8,40,25,.65);backdrop-filter:blur(4px);perspective:900px}
-.modal.on{display:grid}
-.dialog{background:var(--cream);border-radius:22px;padding:20px;width:min(92vw,400px);
-  box-shadow:0 30px 60px rgba(0,0,0,.5);animation:flip .5s both;transform-style:preserve-3d}
-@keyframes flip{from{opacity:0;transform:rotateX(-70deg) translateY(40px)}to{opacity:1}}
-.dialog h3{margin:0 0 6px}
-.toast{position:fixed;left:50%;bottom:22px;z-index:60;transform:translate(-50%,120px);background:#0f3d2e;color:#fff;
-  padding:12px 18px;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.4);transition:transform .4s cubic-bezier(.3,1.5,.5,1);max-width:90vw}
-.toast.on{transform:translate(-50%,0)}
-.note{background:#fff3c9;border-radius:14px;padding:10px 12px;margin:10px 0;box-shadow:0 4px 0 #ecd98a}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;display:none;align-items:center;justify-content:center;padding:16px;
+  background:rgba(8,40,25,.65);overflow:auto;perspective:900px}
+.modal.on{display:flex}
+.dialog{background:var(--cream);border-radius:22px;padding:20px;width:100%;max-width:420px;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:auto;
+  box-shadow:0 30px 60px rgba(0,0,0,.5);animation:flip .45s both;outline:none}
+@keyframes flip{from{opacity:0;transform:rotateX(-60deg) translateY(30px)}to{opacity:1}}
+.dialog h3{margin:0 0 8px;font-size:20px}
+.dialog p{margin:6px 0}
+.dialog ol,.dialog ul{padding-left:20px;margin:8px 0}
+.dialog li{margin:4px 0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actions .btn{flex:1 1 120px;margin:3px 0}
+.toast{
+  position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;
+  transform:translate(-50%,160%);width:max-content;max-width:calc(100vw - 28px);text-align:center;
+  background:#0f3d2e;color:#fff;padding:12px 16px;border-radius:14px;font-weight:700;pointer-events:none;visibility:hidden;
+  box-shadow:0 10px 24px rgba(0,0,0,.4);transition:transform .4s cubic-bezier(.3,1.4,.5,1),visibility .4s;
+}
+.toast.on{transform:translate(-50%,0);visibility:visible}
+.toast.success{background:#14683a}
+.toast.error{background:#a82a2a}
+.toast.info{background:#7a4a0b}
+
+/* ---------- phones ---------- */
+@media(max-width:600px){
+  .hero{grid-template-columns:minmax(0,1fr);justify-items:center;gap:8px}
+  .hero>div:last-child{width:100%}
+  .tot{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .card{padding:14px;border-radius:18px}
+}
+@media(max-width:480px){
+  .tools{margin-left:0;width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tools .monthin{grid-column:1/-1;width:100%}
+  .tools .btn{padding:6px 4px;font-size:13px;line-height:1.15}
+  .row2{grid-template-columns:minmax(0,1fr)}
+  .addexp{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .addexp .btn{grid-column:1/-1}
+  .actions .btn{flex-basis:100%}
+}
+@media(max-width:360px){
+  .card{padding:12px}
+  .cathead .name{font-size:16px}
+  .dialog{padding:16px}
+}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
-<body>
+<body class="intro">
 
-<div class="bg" id="bg">
+<noscript><div style="position:relative;z-index:2;background:#fff3c9;color:#10321f;padding:14px;text-align:center;font-family:sans-serif">Green Budget needs JavaScript. Please turn it on in your browser settings and reload this page.</div></noscript>
+
+<div class="bg" id="bg" aria-hidden="true">
   <div class="blob b1" data-d="30"></div><div class="blob b2" data-d="-40"></div><div class="blob b3" data-d="20"></div>
 </div>
 
-<div class="wrap">
+<div class="wrap" id="top">
   <header>
-    <span class="logo">🌿</span>
+    <span class="logo" aria-hidden="true">🌿</span>
     <h1>Green Budget</h1>
     <div class="tools">
-      <input type="month" id="month" style="width:auto" aria-label="Month">
-      <button class="btn sec sm" id="btnXl">⬇ Excel</button>
-      <button class="btn sec sm" id="btnBackup">💾 Backup</button>
-      <button class="btn sec sm" id="btnRestore">📂 Restore</button>
-      <input type="file" id="restoreFile" accept=".json,application/json" style="display:none">
+      <input type="month" id="month" class="monthin" aria-label="Month">
+      <button type="button" class="btn sec sm" data-act="excel">⬇ Excel</button>
+      <button type="button" class="btn sec sm" data-act="backup">💾 Backup</button>
+      <button type="button" class="btn sec sm" data-act="restore">📂 Restore</button>
+      <input type="file" id="restoreFile" style="display:none" tabindex="-1" aria-hidden="true">
     </div>
   </header>
 
+  <div id="notices"></div>
   <div id="banner"></div>
 
-  <!-- Hero: plant + totals -->
-  <section class="card" data-tilt>
-    <div class="hero">
-      <div class="plantbox">
-        <svg class="plant" viewBox="0 0 170 210" id="plant" aria-label="Budget plant">
-          <defs>
-            <linearGradient id="pot" x1="0" x2="1"><stop offset="0" stop-color="#c9784a"/><stop offset=".5" stop-color="#e49a6a"/><stop offset="1" stop-color="#a85f38"/></linearGradient>
-            <radialGradient id="lg" cx=".3" cy=".3"><stop offset="0" stop-color="#8fe28f"/><stop offset="1" stop-color="#2e9e5b"/></radialGradient>
-          </defs>
-          <ellipse cx="85" cy="200" rx="52" ry="8" fill="rgba(0,0,0,.25)"/>
-          <path id="stem" d="M85 150 C85 120 85 90 85 60" stroke="#2a7d46" stroke-width="7" fill="none" stroke-linecap="round"/>
-          <g id="leaves">
-            <path class="lf" data-r="-62" d="M85 140 C40 135 28 105 40 90 C65 90 80 110 85 140Z" fill="url(#lg)"/>
-            <path class="lf" data-r="62"  d="M85 140 C130 135 142 105 130 90 C105 90 90 110 85 140Z" fill="url(#lg)"/>
-            <path class="lf" data-r="-38" d="M85 110 C50 100 42 70 55 58 C75 62 85 85 85 110Z" fill="url(#lg)"/>
-            <path class="lf" data-r="38"  d="M85 110 C120 100 128 70 115 58 C95 62 85 85 85 110Z" fill="url(#lg)"/>
-            <path class="lf" data-r="-12" d="M85 85 C60 70 62 40 80 25 C95 42 92 65 85 85Z" fill="url(#lg)"/>
-            <path class="lf" data-r="12"  d="M85 85 C110 70 108 40 90 25 C75 42 78 65 85 85Z" fill="url(#lg)"/>
-          </g>
-          <path d="M45 148 H125 L116 196 H54Z" fill="url(#pot)"/>
-          <rect x="40" y="140" width="90" height="14" rx="5" fill="#d98a5a"/>
-        </svg>
-      </div>
-      <div>
-        <p class="msg" id="msg">Set your budget to plant your seed 🌱</p>
-        <div class="tot">
-          <div><small>Budget</small><b id="tB">0</b></div>
-          <div><small>Spent</small><b id="tS">0</b></div>
-          <div><small>Left</small><b id="tL">0</b></div>
-          <div><small>Unplanned</small><b id="tU">0</b></div>
+  <main>
+    <!-- Hero: plant + totals -->
+    <section class="card" data-tilt aria-label="Monthly summary">
+      <div class="hero">
+        <div class="plantbox">
+          <svg class="plant" viewBox="0 0 170 210" id="plant" role="img" aria-label="A plant that grows greener while your budget is healthy">
+            <defs>
+              <linearGradient id="pot" x1="0" x2="1"><stop offset="0" stop-color="#c9784a"/><stop offset=".5" stop-color="#e49a6a"/><stop offset="1" stop-color="#a85f38"/></linearGradient>
+              <radialGradient id="lg" cx=".3" cy=".3"><stop offset="0" stop-color="#8fe28f"/><stop offset="1" stop-color="#2e9e5b"/></radialGradient>
+            </defs>
+            <ellipse cx="85" cy="200" rx="52" ry="8" fill="rgba(0,0,0,.25)"/>
+            <path id="stem" d="M85 150 C85 120 85 90 85 60" stroke="#2a7d46" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <g id="leaves">
+              <path class="lf" data-r="-62" d="M85 140 C40 135 28 105 40 90 C65 90 80 110 85 140Z" fill="url(#lg)"/>
+              <path class="lf" data-r="62"  d="M85 140 C130 135 142 105 130 90 C105 90 90 110 85 140Z" fill="url(#lg)"/>
+              <path class="lf" data-r="-38" d="M85 110 C50 100 42 70 55 58 C75 62 85 85 85 110Z" fill="url(#lg)"/>
+              <path class="lf" data-r="38"  d="M85 110 C120 100 128 70 115 58 C95 62 85 85 85 110Z" fill="url(#lg)"/>
+              <path class="lf" data-r="-12" d="M85 85 C60 70 62 40 80 25 C95 42 92 65 85 85Z" fill="url(#lg)"/>
+              <path class="lf" data-r="12"  d="M85 85 C110 70 108 40 90 25 C75 42 78 65 85 85Z" fill="url(#lg)"/>
+            </g>
+            <path d="M45 148 H125 L116 196 H54Z" fill="url(#pot)"/>
+            <rect x="40" y="140" width="90" height="14" rx="5" fill="#d98a5a"/>
+          </svg>
         </div>
-        <div class="bar" id="bar"><i id="barfill"></i></div>
-        <div class="row2" style="margin-top:10px">
-          <input id="budgetIn" type="number" inputmode="decimal" min="0" placeholder="Monthly budget">
-          <button class="btn" id="btnBudget">Save budget</button>
+        <div>
+          <p class="msg" id="msg">Set your budget to plant your seed 🌱</p>
+          <div class="tot">
+            <div><small>Budget</small><b id="tB">0</b></div>
+            <div><small>Spent</small><b id="tS">0</b></div>
+            <div><small>Left</small><b id="tL">0</b></div>
+            <div><small>Unplanned</small><b id="tU">0</b></div>
+          </div>
+          <div class="bar" id="bar"><i id="barfill"></i></div>
+          <div class="row2" style="margin-top:10px">
+            <input id="budgetIn" type="number" inputmode="decimal" min="0" step="any" placeholder="Monthly budget" aria-label="Monthly budget">
+            <button type="button" class="btn" data-act="budget">Save budget</button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Add category -->
-  <section class="card" data-tilt>
-    <h2>🌱 New category</h2>
-    <div class="row2">
-      <input id="cn" placeholder="e.g. Groceries">
-      <input id="cb" type="number" inputmode="decimal" min="0" placeholder="Amount for it">
-    </div>
-    <button class="btn" id="btnCat">Add category</button>
-  </section>
+    <!-- Add category -->
+    <section class="card" data-tilt aria-label="New category">
+      <h2>🌱 New category</h2>
+      <div class="row2">
+        <input id="cn" placeholder="e.g. Groceries" maxlength="40" autocomplete="off" aria-label="Category name">
+        <input id="cb" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount for it" aria-label="Amount for this category">
+      </div>
+      <button type="button" class="btn" data-act="addcat">Add category</button>
+    </section>
 
-  <div id="list"></div>
+    <div id="list"></div>
+  </main>
+
+  <footer class="foot">
+    <nav aria-label="Footer">
+      <a href="#top" data-act="top">↑ Back to top</a>
+      <button type="button" class="linkbtn" data-act="how">How it works</button>
+      <button type="button" class="linkbtn" data-act="privacy">Privacy</button>
+      <button type="button" class="linkbtn" data-act="backup">Backup</button>
+    </nav>
+    <p>🌿 Green Budget · Your data stays on this device</p>
+  </footer>
 </div>
 
 <!-- Modal -->
-<div class="modal" id="modal"><div class="dialog" id="dialog"></div></div>
-<div class="toast" id="toast"></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="dtitle"><div class="dialog" id="dialog" tabindex="-1"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-window.addEventListener("error", e => { try { toast("Something went wrong: " + (e.message || "error")); } catch (_) {} });
+(function () {
+"use strict";
+
+/* ---------------- helpers ---------------- */
 const $ = id => document.getElementById(id);
-const uid = () => Math.random().toString(36).slice(2, 10);
-const key = m => "greenbudget:" + m;
+const PREFIX = "greenbudget:";
+const MAXAMT = 1e9;
+const key = m => PREFIX + m;
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-3);
+const round2 = n => Math.round((+n + Number.EPSILON) * 100) / 100;
 const fmt = n => Number(n || 0).toLocaleString(undefined, {maximumFractionDigits: 2});
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
-let doc = null;
+const pad = n => String(n).padStart(2, "0");
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
+const mname = m => new Date(+m.slice(0, 4), +m.slice(5, 7) - 1, 1).toLocaleDateString(undefined, {month: "long", year: "numeric"});
+const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canTilt = window.matchMedia && matchMedia("(hover:hover) and (pointer:fine)").matches && !reduceMotion;
 
-if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+/* ---------------- toast (success / error / info) ---------------- */
+let toastTimer;
+function toast(msg, type) {
+  type = type || "info";
+  const t = $("toast");
+  t.className = "toast " + type;
+  t.textContent = (type === "success" ? "✅ " : type === "error" ? "⚠️ " : "ℹ️ ") + msg;
+  void t.offsetWidth;
+  t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), Math.max(3400, msg.length * 55));
+}
+function bad(input, msg) {
+  if (input) {
+    input.classList.add("bad");
+    input.setAttribute("aria-invalid", "true");
+    try { input.focus(); } catch (e) {}
+  }
+  toast(msg, "error");
+  return false;
+}
+document.addEventListener("input", e => {
+  const el = e.target;
+  if (el && el.classList && el.classList.contains("bad")) { el.classList.remove("bad"); el.removeAttribute("aria-invalid"); }
+});
+window.addEventListener("error", e => {
+  console.error(e.error || e.message);
+  toast("Something went wrong. Please refresh the page and try again.", "error");
+});
 
 /* ---------------- storage ---------------- */
+const storageOK = (function () {
+  try { const k = "gb:test"; localStorage.setItem(k, "1"); localStorage.removeItem(k); return true; }
+  catch (e) { return false; }
+})();
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
 function months() {
-  try { return Object.keys(localStorage).filter(k => k.startsWith("greenbudget:")).map(k => k.slice(12)).sort(); }
+  try { return Object.keys(localStorage).filter(k => k.indexOf(PREFIX) === 0).map(k => k.slice(PREFIX.length)).filter(m => /^\d{4}-\d{2}$/.test(m)).sort(); }
   catch (e) { return []; }
 }
+// heal / validate a saved month so one bad entry can never break the page
+function normalize(d, m) {
+  if (!d || typeof d !== "object" || !Array.isArray(d.categories)) return null;
+  return {
+    id: m,
+    budget: Math.max(0, +d.budget || 0),
+    categories: d.categories.filter(c => c && typeof c === "object").map(c => ({
+      id: String(c.id || uid()),
+      name: String(c.name || "Category").slice(0, 40),
+      limit: Math.max(0, +c.limit || 0),
+      expenses: (Array.isArray(c.expenses) ? c.expenses : []).filter(e => e && isFinite(+e.amount)).map(e => ({
+        id: String(e.id || uid()), note: String(e.note || "Expense").slice(0, 60), amount: +e.amount, date: String(e.date || "")
+      }))
+    }))
+  };
+}
+function readMonth(m) {
+  const raw = lsGet(key(m));
+  if (!raw) return null;
+  try { return normalize(JSON.parse(raw), m); } catch (e) { return null; }
+}
+
+let doc = null;
+let curMonth = "";
+
 function load() {
-  const m = $("month").value;
-  let raw = null;
-  try { raw = localStorage.getItem(key(m)); } catch (e) {}
-  try { doc = raw ? JSON.parse(raw) : null; } catch (e) { doc = null; }
-  if (!doc || !Array.isArray(doc.categories)) {
-    // new month: copy last month's budget & categories with fresh (empty) expenses
+  const m = curMonth;
+  doc = readMonth(m);
+  if (!doc) {
+    // new month: copy the last month's budget and categories with empty expenses
     const prev = months().filter(x => x < m).pop();
-    let p = null;
-    try { if (prev) p = JSON.parse(localStorage.getItem(key(prev))); } catch (e) { p = null; }
+    const p = prev ? readMonth(prev) : null;
     doc = {
       id: m,
       budget: p ? p.budget : 0,
@@ -252,18 +411,31 @@ function load() {
   render(); banner();
 }
 function save() {
-  try { localStorage.setItem(key(doc.id), JSON.stringify(doc)); }
-  catch (e) { toast("Could not save – browser storage is blocked."); }
+  if (!lsSet(key(doc.id), JSON.stringify(doc))) {
+    render();
+    toast("Couldn't save. Your browser is blocking storage, so please use a normal (not private) tab, and press Backup before you leave.", "error");
+    return false;
+  }
   render();
+  return true;
 }
 
 /* ---------------- maths ---------------- */
-const catSpent = c => c.expenses.reduce((s, e) => s + +e.amount, 0);
+const catSpent = c => round2(c.expenses.reduce((s, e) => s + +e.amount, 0));
 function totals() {
-  const spent = doc.categories.reduce((s, c) => s + catSpent(c), 0);
-  const planned = doc.categories.reduce((s, c) => s + +c.limit, 0);
-  return {budget: +doc.budget, spent, left: doc.budget - spent, planned, unplanned: doc.budget - planned};
+  const spent = round2(doc.categories.reduce((s, c) => s + catSpent(c), 0));
+  const planned = round2(doc.categories.reduce((s, c) => s + +c.limit, 0));
+  return {budget: +doc.budget, spent, left: round2(doc.budget - spent), planned, unplanned: round2(doc.budget - planned)};
 }
+function parseAmount(s) {
+  s = String(s == null ? "" : s).trim().replace(",", ".");
+  if (s === "") return null;
+  const n = Number(s);
+  if (!isFinite(n) || n < 0 || n > MAXAMT) return null;
+  return round2(n);
+}
+const findCat = id => doc.categories.find(c => c.id === id);
+const cleanName = s => String(s).trim().replace(/\s+/g, " ").slice(0, 40);
 
 /* ---------------- render ---------------- */
 function render() {
@@ -279,155 +451,202 @@ function render() {
   $("barfill").style.width = pctUsed + "%";
   $("bar").classList.toggle("over", t.left < 0);
 
-  // plant health: 1 = full budget left, 0 = nothing left
   const health = t.budget > 0 ? Math.max(0, Math.min(1, t.left / t.budget)) : 0.5;
-  paintPlant(health, t.budget > 0);
+  paintPlant(health);
 
   let m = "Set your budget to plant your seed 🌱";
   if (t.budget > 0) {
-    if (t.left < 0) m = "Over budget by " + fmt(-t.left) + " – edit your budget or trim spending 🥀";
-    else if (health < .2) m = "Running low – your plant needs care 🍂";
-    else if (health < .5) m = "Half the budget used – steady growth 🌿";
-    else m = "Lovely and green – plenty left 🌳";
+    if (t.left < 0) m = "Over budget by " + fmt(-t.left) + ". Edit your budget or trim spending 🥀";
+    else if (health < .2) m = "Running low. Your plant needs care 🍂";
+    else if (health < .5) m = "Half the budget used. Steady growth 🌿";
+    else m = "Lovely and green. Plenty left 🌳";
   }
   $("msg").textContent = m;
 
+  const list = $("list"), keep = {};
+  list.querySelectorAll("input").forEach(i => { if (i.value) keep[i.id] = i.value; });
+
   if (!doc.categories.length) {
-    $("list").innerHTML = `<div class="card empty"><span class="big">🪴</span>No categories yet. Add one above, like Groceries or Electricity.</div>`;
+    list.innerHTML = '<div class="card empty"><span class="big">🪴</span>No categories yet. Add one above, like Groceries or Electricity.</div>';
   } else {
-    $("list").innerHTML = doc.categories.map(c => {
-      const sp = catSpent(c), left = c.limit - sp;
+    list.innerHTML = doc.categories.map(c => {
+      const sp = catSpent(c), left = round2(c.limit - sp);
       const pct = c.limit > 0 ? sp / c.limit * 100 : (sp > 0 ? 101 : 0);
-      const chip = left < 0 ? `<span class="chip over">Over by ${fmt(-left)}</span>`
-        : pct >= 80 ? `<span class="chip near">${fmt(left)} left</span>`
-        : `<span class="chip">${fmt(left)} left</span>`;
-      return `<section class="card cat" data-tilt>
-        <div class="cathead">
-          <span class="name">🍃 ${esc(c.name)}</span>${chip}
-          <span class="sp">
-            <button class="icon" title="Edit" onclick="editCat('${c.id}')">✏️</button>
-            <button class="icon" title="Delete" onclick="delCat('${c.id}')">🗑️</button>
-          </span>
-        </div>
-        <div class="catnums">Budget ${fmt(c.limit)} · Spent ${fmt(sp)} · Left <b class="${left < 0 ? "neg" : ""}">${fmt(left)}</b></div>
-        <div class="bar ${left < 0 ? "over" : ""}"><i style="width:${Math.min(100, pct)}%"></i></div>
-        ${c.expenses.map(e => `<div class="exp"><span>${esc(e.note)} <small>${esc(e.date)}</small></span>
-          <span class="amt">${fmt(e.amount)}</span>
-          <button class="icon" title="Remove" onclick="delExp('${c.id}','${e.id}')">✕</button></div>`).join("")}
-        <div class="addexp">
-          <input id="en-${c.id}" placeholder="What did you buy?">
-          <input id="ea-${c.id}" type="number" inputmode="decimal" min="0" placeholder="Amount">
-          <button class="btn sm" onclick="addExp('${c.id}')">+ Spend</button>
-        </div>
-      </section>`;
+      const chip = left < 0 ? '<span class="chip over">Over by ' + fmt(-left) + '</span>'
+        : pct >= 80 ? '<span class="chip near">' + fmt(left) + ' left</span>'
+        : '<span class="chip">' + fmt(left) + ' left</span>';
+      return '<section class="card cat" data-tilt>' +
+        '<div class="cathead">' +
+          '<span class="name">🍃 ' + esc(c.name) + '</span>' + chip +
+          '<span class="sp">' +
+            '<button type="button" class="icon" data-act="edit" data-c="' + c.id + '" aria-label="Edit ' + esc(c.name) + '">✏️</button>' +
+            '<button type="button" class="icon" data-act="delcat" data-c="' + c.id + '" aria-label="Delete ' + esc(c.name) + '">🗑️</button>' +
+          '</span>' +
+        '</div>' +
+        '<div class="catnums">Budget ' + fmt(c.limit) + ' · Spent ' + fmt(sp) + ' · Left <b class="' + (left < 0 ? "neg" : "") + '">' + fmt(left) + '</b></div>' +
+        '<div class="bar ' + (left < 0 ? "over" : "") + '"><i style="width:' + Math.min(100, pct) + '%"></i></div>' +
+        c.expenses.map(e =>
+          '<div class="exp"><span class="what">' + esc(e.note) + '<small>' + esc(e.date) + '</small></span>' +
+          '<span class="amt">' + fmt(e.amount) + '</span>' +
+          '<button type="button" class="icon" data-act="delexp" data-c="' + c.id + '" data-e="' + e.id + '" aria-label="Remove ' + esc(e.note) + '">✕</button></div>'
+        ).join("") +
+        '<div class="addexp">' +
+          '<input id="en-' + c.id + '" placeholder="What for?" maxlength="60" autocomplete="off" aria-label="What did you buy in ' + esc(c.name) + '">' +
+          '<input id="ea-' + c.id + '" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount" aria-label="Amount spent in ' + esc(c.name) + '">' +
+          '<button type="button" class="btn sm" data-act="addexp" data-c="' + c.id + '">+ Spend</button>' +
+        '</div>' +
+      '</section>';
     }).join("");
   }
+  Object.keys(keep).forEach(id => { const el = $(id); if (el) el.value = keep[id]; });
   bindTilt();
 }
 
-function paintPlant(h, hasBudget) {
-  const leaves = document.querySelectorAll("#leaves .lf");
-  leaves.forEach((l, i) => {
+function paintPlant(h) {
+  document.querySelectorAll("#leaves .lf").forEach(l => {
     const r = +l.dataset.r;
-    // wilt: leaves droop outward & shrink as health falls
     const droop = (1 - h) * (r < 0 ? -55 : 55);
     const s = 0.45 + 0.55 * h;
-    l.style.transform = `rotate(${droop}deg) scale(${s})`;
-    l.style.fill = h < .25 ? "#b7a24a" : h < .5 ? "#7fc15a" : "";
-    l.style.fill = "";
+    l.style.transform = "rotate(" + droop + "deg) scale(" + s + ")";
     l.setAttribute("fill", h < .25 ? "#b8a04a" : h < .5 ? "#7cbf5b" : "url(#lg)");
   });
   const top = 60 + (1 - h) * 45;
-  $("stem").setAttribute("d", `M85 150 C85 120 85 ${(150 + top) / 2} 85 ${top}`);
+  $("stem").setAttribute("d", "M85 150 C85 120 85 " + ((150 + top) / 2) + " 85 " + top);
 }
 
-/* ---------------- actions ---------------- */
-$("btnBudget").onclick = () => {
-  const v = parseFloat($("budgetIn").value);
-  if (isNaN(v) || v < 0) return toast("Enter a valid budget amount.");
-  doc.budget = v; save(); toast("Budget saved 🌱");
-  const t = totals();
-  if (t.unplanned < 0) toast("Your categories add up to more than the budget by " + fmt(-t.unplanned));
-};
-$("btnCat").onclick = () => {
-  const n = $("cn").value.trim(), b = parseFloat($("cb").value);
-  if (!n) return toast("Give the category a name.");
-  if (isNaN(b) || b < 0) return toast("Enter the amount for this category.");
-  doc.categories.push({id: uid(), name: n, limit: b, expenses: []});
-  $("cn").value = $("cb").value = "";
-  save();
-  const t = totals();
-  if (t.unplanned < 0) askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
-};
-function addExp(cid) {
-  const c = doc.categories.find(x => x.id === cid);
-  const note = $("en-" + cid).value.trim() || "Expense";
-  const amt = parseFloat($("ea-" + cid).value);
-  if (isNaN(amt) || amt <= 0) return toast("Enter an amount.");
-  const beforeT = totals().left, beforeC = c.limit - catSpent(c);
-  c.expenses.push({id: uid(), note, amount: amt, date: today()});
-  save();
-  const t = totals(), left = c.limit - catSpent(c);
-  if (t.left < 0 && beforeT >= 0) {
-    askRaiseBudget("You have spent " + fmt(t.spent) + ", which is more than your monthly budget of " + fmt(t.budget) + ".", t.spent);
-  } else if (left < 0 && beforeC >= 0) {
-    askRaiseCat(c, "“" + c.name + "” is over its budget of " + fmt(c.limit) + " by " + fmt(-left) + ".");
-  } else toast("Added. " + fmt(t.left) + " left this month.");
+/* ---------------- notices ---------------- */
+function notices() {
+  let html = "";
+  if (!storageOK) {
+    html += '<div class="note err" role="alert">⚠️ Your browser is blocking saving (private mode?). Anything you enter will be lost when you close this page. Open the site in a normal tab.</div>';
+  }
+  if (/FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|Messenger|TikTok|Snapchat|; wv\)/i.test(navigator.userAgent)) {
+    html += '<div class="note">ℹ️ You are viewing this inside another app. To save your data safely and download files, open this link in Chrome or Samsung Internet.</div>';
+  }
+  $("notices").innerHTML = html;
 }
-function delExp(cid, eid) {
-  const c = doc.categories.find(x => x.id === cid);
-  c.expenses = c.expenses.filter(e => e.id !== eid); save();
+function banner() {
+  const prev = months().filter(x => x < curMonth).pop();
+  const done = prev ? !!lsGet("greenexported:" + prev) : true;
+  $("banner").innerHTML = prev && !done
+    ? '<div class="note">🍂 ' + esc(mname(prev)) + ' is finished. <button type="button" class="btn sm" data-act="xlprev" data-m="' + prev + '">Download ' + esc(mname(prev)) + '</button></div>'
+    : "";
 }
-function delCat(cid) {
-  const c = doc.categories.find(x => x.id === cid);
-  openModal(`<h3>Delete “${esc(c.name)}”?</h3><p>Its ${c.expenses.length} expense(s) will be removed too.</p>
-    <button class="btn warn" id="yes">Yes, delete</button> <button class="btn sec" id="no">Keep it</button>`);
-  $("yes").onclick = () => { doc.categories = doc.categories.filter(x => x.id !== cid); closeModal(); save(); };
-  $("no").onclick = closeModal;
+
+/* ---------------- modal ---------------- */
+let lastFocus = null;
+function openModal(html, focusInput) {
+  lastFocus = document.activeElement;
+  $("dialog").innerHTML = html;
+  $("modal").classList.add("on");
+  document.body.classList.add("noscroll");
+  const i = focusInput ? $("dialog").querySelector("input") : null;
+  setTimeout(() => { try { (i || $("dialog")).focus(); if (i && i.select) i.select(); } catch (e) {} }, 60);
 }
-function editCat(cid) {
-  const c = doc.categories.find(x => x.id === cid);
-  openModal(`<h3>Edit category</h3>
-    <input id="m-n" value="${esc(c.name)}"><input id="m-b" type="number" inputmode="decimal" min="0" value="${c.limit}">
-    <button class="btn" id="ok">Save</button> <button class="btn sec" id="no">Cancel</button>`);
-  $("ok").onclick = () => {
-    const n = $("m-n").value.trim(), b = parseFloat($("m-b").value);
-    if (!n || isNaN(b) || b < 0) return toast("Check the name and amount.");
-    c.name = n; c.limit = b; closeModal(); save();
-  };
-  $("no").onclick = closeModal;
+function closeModal() {
+  $("modal").classList.remove("on");
+  document.body.classList.remove("noscroll");
+  $("dialog").innerHTML = "";
+  if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
 }
+function wire(okFn) {
+  const ok = $("ok"), no = $("no");
+  if (ok) ok.onclick = () => { try { okFn(); } catch (err) { console.error(err); toast("That didn't work. Please try again.", "error"); } };
+  if (no) no.onclick = closeModal;
+}
+$("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+function openInfo(title, body) {
+  openModal('<h3 id="dtitle">' + title + '</h3>' + body + '<div class="actions"><button type="button" class="btn" id="no">Close</button></div>');
+  wire(null);
+}
+
+/* ---------------- budget & category actions ---------------- */
 function askRaiseBudget(reason, suggested) {
-  openModal(`<h3>🥀 Over budget</h3><p>${esc(reason)}</p><p>Set a new monthly budget:</p>
-    <input id="m-b" type="number" inputmode="decimal" min="0" value="${Math.ceil(suggested)}">
-    <button class="btn" id="ok">Update budget</button> <button class="btn sec" id="no">Leave it</button>`);
-  $("ok").onclick = () => {
-    const v = parseFloat($("m-b").value);
-    if (isNaN(v) || v < 0) return toast("Enter a valid amount.");
-    doc.budget = v; $("budgetIn").value = v; closeModal(); save(); toast("Budget updated 🌳");
-  };
-  $("no").onclick = () => { closeModal(); toast("Okay, budget left as it is."); };
+  openModal('<h3 id="dtitle">🥀 Over budget</h3><p>' + esc(reason) + '</p><p>Set a new monthly budget:</p>' +
+    '<input id="m-b" type="number" inputmode="decimal" min="0" step="any" value="' + Math.ceil(suggested) + '" aria-label="New monthly budget">' +
+    '<div class="actions"><button type="button" class="btn" id="ok">Update budget</button><button type="button" class="btn sec" id="no">Leave it</button></div>', true);
+  wire(() => {
+    const inp = $("m-b"), v = parseAmount(inp.value);
+    if (v === null) return bad(inp, "Please enter a valid budget amount.");
+    doc.budget = v; $("budgetIn").value = v; closeModal();
+    if (save()) toast("Budget updated to " + fmt(v) + " 🌳", "success");
+  });
+  $("no").onclick = () => { closeModal(); toast("Okay, your budget stays as it is.", "info"); };
 }
 function askRaiseCat(c, reason) {
-  const need = Math.ceil(catSpent(c));
-  openModal(`<h3>🍂 Category over budget</h3><p>${esc(reason)}</p><p>New amount for “${esc(c.name)}”:</p>
-    <input id="m-b" type="number" inputmode="decimal" min="0" value="${need}">
-    <button class="btn" id="ok">Update</button> <button class="btn sec" id="no">Leave it</button>`);
-  $("ok").onclick = () => {
-    const v = parseFloat($("m-b").value);
-    if (isNaN(v) || v < 0) return toast("Enter a valid amount.");
-    c.limit = v; closeModal(); save();
+  openModal('<h3 id="dtitle">🍂 Category over budget</h3><p>' + esc(reason) + '</p><p>New amount for “' + esc(c.name) + '”:</p>' +
+    '<input id="m-b" type="number" inputmode="decimal" min="0" step="any" value="' + Math.ceil(catSpent(c)) + '" aria-label="New amount for ' + esc(c.name) + '">' +
+    '<div class="actions"><button type="button" class="btn" id="ok">Update</button><button type="button" class="btn sec" id="no">Leave it</button></div>', true);
+  wire(() => {
+    const inp = $("m-b"), v = parseAmount(inp.value);
+    if (v === null) return bad(inp, "Please enter a valid amount.");
+    c.limit = v; closeModal();
+    if (!save()) return;
     const t = totals();
-    if (t.unplanned < 0) askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
-  };
-  $("no").onclick = closeModal;
+    if (t.budget > 0 && t.planned > t.budget) {
+      askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
+    } else toast("“" + c.name + "” updated to " + fmt(v) + " 🌳", "success");
+  });
+}
+function editCat(cid) {
+  const c = findCat(cid);
+  if (!c) return toast("That category no longer exists. Please refresh the page.", "error");
+  openModal('<h3 id="dtitle">✏️ Edit category</h3>' +
+    '<input id="m-n" maxlength="40" value="' + esc(c.name) + '" aria-label="Category name" autocomplete="off">' +
+    '<input id="m-b" type="number" inputmode="decimal" min="0" step="any" value="' + c.limit + '" aria-label="Category amount">' +
+    '<div class="actions"><button type="button" class="btn" id="ok">Save</button><button type="button" class="btn sec" id="no">Cancel</button></div>', true);
+  wire(() => {
+    const ni = $("m-n"), bi = $("m-b"), n = cleanName(ni.value), b = parseAmount(bi.value);
+    if (!n) return bad(ni, "Please give the category a name.");
+    if (b === null) return bad(bi, "Please enter a valid amount.");
+    if (doc.categories.some(x => x.id !== c.id && x.name.toLowerCase() === n.toLowerCase())) return bad(ni, "You already have a category called “" + n + "”.");
+    c.name = n; c.limit = b; closeModal();
+    if (!save()) return;
+    toast("Category updated 🌿", "success");
+    const t = totals();
+    if (t.budget > 0 && t.planned > t.budget) askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
+  });
+}
+function delCat(cid) {
+  const c = findCat(cid);
+  if (!c) return toast("That category no longer exists. Please refresh the page.", "error");
+  openModal('<h3 id="dtitle">Delete “' + esc(c.name) + '”?</h3><p>Its ' + c.expenses.length + ' expense(s) will be removed too.</p>' +
+    '<div class="actions"><button type="button" class="btn warn" id="ok">Yes, delete</button><button type="button" class="btn sec" id="no">Keep it</button></div>');
+  wire(() => {
+    doc.categories = doc.categories.filter(x => x.id !== cid); closeModal();
+    if (save()) toast("Category deleted", "success");
+  });
+}
+function addExp(cid) {
+  const c = findCat(cid);
+  if (!c) return toast("That category no longer exists. Please refresh the page.", "error");
+  const ni = $("en-" + cid), ai = $("ea-" + cid);
+  const amt = parseAmount(ai.value);
+  if (amt === null || amt <= 0) return bad(ai, "Please enter how much you spent (more than 0).");
+  const note = (ni.value.trim() || "Expense").slice(0, 60);
+  const before = totals(), beforeLeft = round2(c.limit - catSpent(c));
+  c.expenses.push({id: uid(), note, amount: amt, date: today()});
+  ni.value = ai.value = "";
+  if (!save()) return;
+  const t = totals(), left = round2(c.limit - catSpent(c));
+  if (t.budget > 0 && t.left < 0 && before.left >= 0) {
+    askRaiseBudget("You have spent " + fmt(t.spent) + ", which is more than your monthly budget of " + fmt(t.budget) + ".", t.spent);
+  } else if (left < 0 && beforeLeft >= 0) {
+    askRaiseCat(c, "“" + c.name + "” is over its amount of " + fmt(c.limit) + " by " + fmt(-left) + ".");
+  } else if (t.budget <= 0) {
+    toast("Added “" + note + "”. Set your monthly budget to see what is left.", "success");
+  } else if (t.left < 0) {
+    toast("Added, but you are over your monthly budget by " + fmt(-t.left) + ".", "info");
+  } else {
+    toast("Added “" + note + "”. " + fmt(t.left) + " left this month.", "success");
+  }
 }
 
-/* ---------------- excel ---------------- */
+/* ---------------- Excel / CSV ---------------- */
 function exportExcel(m) {
-  m = m || $("month").value;
-  const d = m === doc.id ? doc : JSON.parse(localStorage.getItem(key(m)) || "null");
-  if (!d) return toast("Nothing to save for this month yet.");
+  m = m || curMonth;
+  const d = m === doc.id ? doc : readMonth(m);
+  if (!d) return toast("There is nothing saved for " + mname(m) + " yet.", "error");
   const rows = [["Category", "Category budget", "Item", "Amount", "Date"]];
   let spent = 0, planned = 0;
   d.categories.forEach(c => {
@@ -435,170 +654,246 @@ function exportExcel(m) {
     if (!c.expenses.length) rows.push([c.name, +c.limit, "", "", ""]);
     c.expenses.forEach(e => { spent += +e.amount; rows.push([c.name, +c.limit, e.note, +e.amount, e.date]); });
   });
-  rows.push([], ["Monthly budget", +d.budget], ["Total spent", spent], ["Left", d.budget - spent], ["Planned in categories", planned]);
-  toast("Preparing Excel…");
+  rows.push([], ["Monthly budget", +d.budget], ["Total spent", round2(spent)], ["Left", round2(d.budget - spent)], ["Planned in categories", round2(planned)]);
+  toast("Preparing your Excel file…", "info");
   loadXlsx().then(() => {
     const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws["!cols"] = [{wch:22},{wch:16},{wch:24},{wch:12},{wch:12}];
+    ws["!cols"] = [{wch: 22}, {wch: 16}, {wch: 24}, {wch: 12}, {wch: 12}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, m);
     XLSX.writeFile(wb, "budget-" + m + ".xlsx");
-    markExported(m); toast("Excel downloaded ⬇");
+    markExported(m); toast("Excel file downloaded for " + mname(m) + " ⬇", "success");
   }).catch(() => {
-    // weak or no internet: save a CSV instead (opens in Excel) – needs no library
-    downloadCsv(rows, m); markExported(m);
-    toast("Internet is weak, so it was saved as a CSV file (opens in Excel).");
+    try {
+      downloadCsv(rows, m); markExported(m);
+      toast("Your connection is weak, so the file was saved as CSV instead. It opens in Excel.", "success");
+    } catch (err) {
+      console.error(err);
+      toast("Couldn't create the file. Please check your connection and try again, or use Backup.", "error");
+    }
   });
 }
-function markExported(m) { try { localStorage.setItem("greenexported:" + m, "1"); } catch (e) {} banner(); }
+function markExported(m) { lsSet("greenexported:" + m, "1"); banner(); }
 function loadXlsx() {
   return new Promise((res, rej) => {
     if (window.XLSX) return res();
     const s = document.createElement("script");
-    const t = setTimeout(() => rej(new Error("timeout")), 8000);
+    const t = setTimeout(() => { s.remove(); rej(new Error("timeout")); }, 8000);
     s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
     s.onload = () => { clearTimeout(t); window.XLSX ? res() : rej(new Error("missing")); };
-    s.onerror = () => { clearTimeout(t); rej(new Error("load")); };
+    s.onerror = () => { clearTimeout(t); s.remove(); rej(new Error("load")); };
     document.head.appendChild(s);
   });
 }
-function downloadCsv(rows, m) {
-  const csv = "\ufeff" + rows.map(r => r.map(v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"').join(",")).join("\r\n");
+function downloadBlob(blob, name) {
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([csv], {type: "text/csv;charset=utf-8"}));
-  a.download = "budget-" + m + ".csv";
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
 }
-$("btnXl").onclick = () => exportExcel();
-// fetch the Excel library quietly in the background so the page itself never waits for it
-window.addEventListener("load", () => setTimeout(() => { loadXlsx().catch(() => {}); }, 2000));
-function banner() {
-  const m = $("month").value, prev = months().filter(x => x < m).pop();
-  let done = false; try { done = !!localStorage.getItem("greenexported:" + prev); } catch (e) {}
-  $("banner").innerHTML = prev && !done
-    ? `<div class="note">🍂 ${prev} is finished. <button class="btn sm" onclick="exportExcel('${prev}')">Download ${prev} Excel</button></div>` : "";
+function downloadCsv(rows, m) {
+  const csv = "﻿" + rows.map(r => r.map(v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"').join(",")).join("\r\n");
+  downloadBlob(new Blob([csv], {type: "text/csv;charset=utf-8"}), "budget-" + m + ".csv");
 }
 
 /* ---------------- backup & restore ---------------- */
 function backupAll() {
   const ms = months();
-  if (!ms.length) return toast("Nothing to back up yet.");
-  const out = {app: "green-budget", version: 1, exportedAt: new Date().toISOString(), months: {}};
-  ms.forEach(m => { try { out.months[m] = JSON.parse(localStorage.getItem(key(m))); } catch (e) {} });
-  const blob = new Blob([JSON.stringify(out, null, 2)], {type: "application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "green-budget-backup-" + today() + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  toast("Backup saved 💾 (" + ms.length + " month" + (ms.length > 1 ? "s" : "") + ")");
-}
-function validDoc(d) {
-  return d && typeof d === "object" && Array.isArray(d.categories) && !isNaN(+d.budget) &&
-    d.categories.every(c => c && typeof c.name === "string" && !isNaN(+c.limit) && Array.isArray(c.expenses) &&
-      c.expenses.every(e => e && !isNaN(+e.amount)));
+  if (!ms.length) return toast("Nothing to back up yet. Add a budget or a category first.", "error");
+  try {
+    const out = {app: "green-budget", version: 1, exportedAt: new Date().toISOString(), months: {}};
+    ms.forEach(m => { const d = readMonth(m); if (d) out.months[m] = d; });
+    downloadBlob(new Blob([JSON.stringify(out, null, 2)], {type: "application/json"}), "green-budget-backup-" + today() + ".json");
+    toast("Backup saved 💾 (" + ms.length + " month" + (ms.length > 1 ? "s" : "") + "). Keep the file somewhere safe.", "success");
+  } catch (err) {
+    console.error(err);
+    toast("Couldn't create the backup. Please try again in Chrome or Samsung Internet.", "error");
+  }
 }
 function pickRestore() { $("restoreFile").value = ""; $("restoreFile").click(); }
 $("restoreFile").addEventListener("change", e => {
-  const f = e.target.files[0];
+  const f = e.target.files && e.target.files[0];
   if (!f) return;
   const r = new FileReader();
+  r.onerror = () => toast("Couldn't read that file. Please pick it again.", "error");
   r.onload = () => {
     let data;
-    try { data = JSON.parse(r.result); } catch (err) { return toast("That file isn't a valid backup."); }
+    try { data = JSON.parse(r.result); } catch (err) { return toast("That file isn't a valid backup. Please choose a green-budget-backup .json file.", "error"); }
     if (!data || data.app !== "green-budget" || !data.months || typeof data.months !== "object")
-      return toast("That file isn't a Green Budget backup.");
-    const keys = Object.keys(data.months).filter(m => /^\d{4}-\d{2}$/.test(m) && validDoc(data.months[m])).sort();
-    if (!keys.length) return toast("No valid months found in that backup.");
-    const mname = m => new Date(+m.slice(0, 4), +m.slice(5, 7) - 1, 1).toLocaleDateString(undefined, {month: "long", year: "numeric"});
-    const has = m => { try { return !!localStorage.getItem(key(m)); } catch (err) { return false; } };
-    const spentOf = d => d.categories.reduce((s, c) => s + c.expenses.reduce((a, e) => a + +e.amount, 0), 0);
-    const items = keys.map(m => {
-      const d = data.months[m];
-      return `<li><b>${esc(mname(m))}</b> – ${d.categories.length} categories, spent ${fmt(spentOf(d))}` +
-        (has(m) ? ` <span class="chip near">replaces current</span>` : ` <span class="chip">new</span>`) + `</li>`;
-    }).join("");
-    openModal(`<h3>📂 Restore backup?</h3>
-      <p>This backup contains:</p>
-      <ul style="padding-left:18px;margin:6px 0;max-height:34vh;overflow:auto">${items}</ul>
-      <p>Only these months are changed. Every other month on this phone stays as it is.</p>
-      <button class="btn" id="ok">Restore</button> <button class="btn sec" id="no">Cancel</button>`);
-    $("ok").onclick = () => {
-      try {
-        keys.forEach(m => { const d = data.months[m]; d.id = m; localStorage.setItem(key(m), JSON.stringify(d)); });
-      } catch (err) { closeModal(); return toast("Could not restore – browser storage is blocked."); }
+      return toast("That file isn't a Green Budget backup.", "error");
+    const good = {};
+    Object.keys(data.months).filter(m => /^\d{4}-\d{2}$/.test(m)).sort().forEach(m => {
+      const d = normalize(data.months[m], m);
+      if (d) good[m] = d;
+    });
+    const keys = Object.keys(good);
+    if (!keys.length) return toast("No usable months were found in that backup.", "error");
+    const spentOf = d => round2(d.categories.reduce((s, c) => s + c.expenses.reduce((a, x) => a + +x.amount, 0), 0));
+    const items = keys.map(m => '<li><b>' + esc(mname(m)) + '</b>: ' + good[m].categories.length + ' categories, spent ' + fmt(spentOf(good[m])) + ' ' +
+      (lsGet(key(m)) ? '<span class="chip near">replaces current</span>' : '<span class="chip">new</span>') + '</li>').join("");
+    openModal('<h3 id="dtitle">📂 Restore backup?</h3><p>This backup contains:</p><ul>' + items + '</ul>' +
+      '<p>Only these months are changed. Every other month on this phone stays as it is.</p>' +
+      '<div class="actions"><button type="button" class="btn" id="ok">Restore</button><button type="button" class="btn sec" id="no">Cancel</button></div>');
+    wire(() => {
+      let saved = 0;
+      keys.forEach(m => { if (lsSet(key(m), JSON.stringify(good[m]))) saved++; });
       closeModal();
-      $("month").value = keys[keys.length - 1];   // show the latest restored month
-      load(); toast("Restored " + keys.length + " month(s) 🌳 Showing " + mname(keys[keys.length - 1]));
-    };
-    $("no").onclick = closeModal;
+      if (saved !== keys.length) return toast("Couldn't restore everything. Your browser is blocking storage.", "error");
+      curMonth = keys[keys.length - 1];
+      $("month").value = curMonth;
+      load();
+      toast("Restored " + saved + " month" + (saved > 1 ? "s" : "") + " 🌳 Showing " + mname(curMonth), "success");
+    });
   };
-  r.onerror = () => toast("Could not read that file.");
   r.readAsText(f);
 });
-$("btnBackup").onclick = backupAll;
-$("btnRestore").onclick = pickRestore;
 
-/* ---------------- modal / toast ---------------- */
-function openModal(html) { $("dialog").innerHTML = html; $("modal").classList.add("on"); const i = $("dialog").querySelector("input"); if (i) setTimeout(() => i.focus(), 50); }
-function closeModal() { $("modal").classList.remove("on"); }
-$("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
-let tt;
-function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 3200); }
+/* ---------------- footer info ---------------- */
+const HOW = '<ol><li>Type your monthly budget and tap <b>Save budget</b>.</li>' +
+  '<li>Add categories like Groceries or Electricity, each with an amount.</li>' +
+  '<li>Inside a category, tap <b>+ Spend</b> whenever you buy something. The amount is taken off automatically.</li>' +
+  '<li>If you spend more than planned, the plant wilts and you can change the budget.</li>' +
+  '<li>At the end of the month tap <b>Excel</b> or <b>Backup</b> to keep a copy.</li></ol>';
+const PRIVACY = '<p>Green Budget has no accounts and no server. Everything you type is saved <b>only in this browser on this device</b>, and nothing is sent anywhere.</p>' +
+  '<p>Clearing your browser data, using a private tab or getting a new phone removes it, so press <b>Backup</b> regularly. On a new device tap <b>Restore</b> and pick your backup file.</p>';
 
-/* ---------------- 3D effects ---------------- */
+/* ---------------- button dispatcher ---------------- */
+const ACT = {
+  top() { window.scrollTo({top: 0, behavior: reduceMotion ? "auto" : "smooth"}); },
+  how() { openInfo("🌿 How it works", HOW); },
+  privacy() { openInfo("🔒 Your privacy", PRIVACY); },
+  excel() { exportExcel(); },
+  xlprev(b) { exportExcel(b.dataset.m); },
+  backup() { backupAll(); },
+  restore() { pickRestore(); },
+  budget() {
+    const inp = $("budgetIn"), v = parseAmount(inp.value);
+    if (v === null) return bad(inp, "Please enter your monthly budget as a number, like 50000.");
+    doc.budget = v;
+    if (!save()) return;
+    const t = totals();
+    if (t.budget > 0 && t.planned > t.budget) toast("Budget saved. Your categories add up to " + fmt(t.planned) + ", which is " + fmt(t.planned - t.budget) + " more than your budget.", "info");
+    else if (t.left < 0) toast("Budget saved, but you have already spent " + fmt(-t.left) + " more than it.", "info");
+    else toast("Budget saved 🌱 " + fmt(t.left) + " left to spend.", "success");
+  },
+  addcat() {
+    const ni = $("cn"), ai = $("cb"), name = cleanName(ni.value);
+    if (!name) return bad(ni, "Please give the category a name, like Groceries.");
+    const amt = parseAmount(ai.value);
+    if (amt === null) return bad(ai, "Please enter an amount for this category.");
+    if (doc.categories.some(c => c.name.toLowerCase() === name.toLowerCase())) return bad(ni, "You already have a category called “" + name + "”.");
+    doc.categories.push({id: uid(), name, limit: amt, expenses: []});
+    ni.value = ai.value = "";
+    if (!save()) return;
+    const t = totals();
+    if (t.budget > 0 && t.planned > t.budget) {
+      askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
+    } else if (t.budget <= 0) {
+      toast("Category “" + name + "” added 🌱 Don't forget to set your monthly budget.", "success");
+    } else toast("Category “" + name + "” added 🌱", "success");
+  },
+  addexp(b) { addExp(b.dataset.c); },
+  edit(b) { editCat(b.dataset.c); },
+  delcat(b) { delCat(b.dataset.c); },
+  delexp(b) {
+    const c = findCat(b.dataset.c);
+    if (!c) return toast("That category no longer exists. Please refresh the page.", "error");
+    const before = c.expenses.length;
+    c.expenses = c.expenses.filter(e => e.id !== b.dataset.e);
+    if (c.expenses.length === before) return;
+    if (save()) toast("Expense removed", "success");
+  }
+};
+function run(name, el) {
+  const fn = ACT[name];
+  if (!fn) return;
+  try { fn(el); } catch (err) { console.error(err); toast("That didn't work. Please try again, or refresh the page.", "error"); }
+}
+document.addEventListener("click", e => {
+  const b = e.target && e.target.closest ? e.target.closest("[data-act]") : null;
+  if (!b) return;
+  if (b.tagName === "A") e.preventDefault();
+  run(b.dataset.act, b);
+});
+document.addEventListener("keydown", e => {
+  const modalOn = $("modal").classList.contains("on");
+  if (e.key === "Escape" && modalOn) { closeModal(); return; }
+  if (e.key !== "Enter") return;
+  const t = e.target;
+  if (!t || t.tagName !== "INPUT" || t.type === "month" || t.type === "file") return;
+  if (modalOn) { const ok = $("ok"); if (ok) { e.preventDefault(); ok.click(); } return; }
+  const id = t.id;
+  if (id === "budgetIn") run("budget");
+  else if (id === "cn" || id === "cb") run("addcat");
+  else if (id.indexOf("en-") === 0 || id.indexOf("ea-") === 0) addExp(id.slice(3));
+});
+
+/* ---------------- month picker ---------------- */
+function thisMonth() { return today().slice(0, 7); }
+$("month").addEventListener("change", () => {
+  const v = $("month").value;
+  if (!/^\d{4}-\d{2}$/.test(v)) {
+    $("month").value = curMonth;
+    return toast("Please pick a valid month.", "error");
+  }
+  curMonth = v;
+  load();
+});
+
+/* ---------------- 3D effects (desktop tilt, light on phones) ---------------- */
 function bindTilt() {
+  if (!canTilt) return;
   document.querySelectorAll("[data-tilt]").forEach(el => {
     if (el._t) return; el._t = 1;
     el.addEventListener("mousemove", e => {
       const r = el.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-      el.style.transform = `perspective(900px) rotateX(${(-y * 7).toFixed(2)}deg) rotateY(${(x * 9).toFixed(2)}deg) translateZ(8px)`;
+      el.style.transform = "perspective(900px) rotateX(" + (-y * 7).toFixed(2) + "deg) rotateY(" + (x * 9).toFixed(2) + "deg)";
     });
-    el.addEventListener("mouseleave", () => el.style.transform = "");
+    el.addEventListener("mouseleave", () => { el.style.transform = ""; });
   });
 }
-// parallax blobs
-document.addEventListener("mousemove", e => {
-  const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
-  document.querySelectorAll(".blob").forEach(b => {
-    const d = +b.dataset.d; b.style.transform = `translate3d(${x * d * 2}px,${y * d * 2}px,0)`;
+let rafBlob = 0;
+function moveBlobs(x, y) {
+  if (rafBlob) return;
+  rafBlob = requestAnimationFrame(() => {
+    rafBlob = 0;
+    document.querySelectorAll(".blob").forEach(b => { const d = +b.dataset.d; b.style.transform = "translate3d(" + (x * d * 2) + "px," + (y * d * 2) + "px,0)"; });
   });
-});
-// phone tilt
-window.addEventListener("deviceorientation", e => {
-  if (e.gamma == null) return;
-  const x = e.gamma / 90, y = (e.beta || 0) / 180;
-  document.querySelectorAll(".blob").forEach(b => { const d = +b.dataset.d; b.style.transform = `translate3d(${x * d * 2}px,${y * d * 2}px,0)`; });
-});
-// falling 3D leaves
-(function () {
+}
+if (!reduceMotion) {
+  document.addEventListener("mousemove", e => moveBlobs(e.clientX / innerWidth - .5, e.clientY / innerHeight - .5));
+  window.addEventListener("deviceorientation", e => { if (e.gamma != null) moveBlobs(Math.max(-1, Math.min(1, e.gamma / 45)) * .5, Math.max(-1, Math.min(1, ((e.beta || 0) - 45) / 90)) * .5); });
+}
+(function leaves() {
+  if (reduceMotion) return;
   const bg = $("bg"), set = ["🍃", "🌿", "🍀", "🌱", "🍂"];
-  for (let i = 0; i < 8; i++) {
+  const n = window.matchMedia && matchMedia("(max-width:600px)").matches ? 5 : 8;
+  for (let i = 0; i < n; i++) {
     const l = document.createElement("span");
     l.className = "leaf"; l.textContent = set[i % set.length];
-    l.style.left = Math.random() * 100 + "vw";
-    l.style.fontSize = 18 + Math.random() * 26 + "px";
-    l.style.animationDuration = 10 + Math.random() * 14 + "s";
+    l.style.left = Math.random() * 92 + "vw";
+    l.style.fontSize = 18 + Math.random() * 22 + "px";
+    l.style.animationDuration = 12 + Math.random() * 14 + "s";
     l.style.animationDelay = -Math.random() * 20 + "s";
     bg.appendChild(l);
   }
 })();
 
 /* ---------------- start ---------------- */
-$("month").value = today().slice(0, 7);
-$("month").addEventListener("change", load);
-document.addEventListener("keydown", e => {
-  if (e.key === "Enter" && e.target.tagName === "INPUT" && !$("modal").classList.contains("on")) {
-    const id = e.target.id;
-    if (id === "budgetIn") $("btnBudget").click();
-    else if (id === "cn" || id === "cb") $("btnCat").click();
-    else if (id.startsWith("en-") || id.startsWith("ea-")) addExp(id.slice(3));
-  } else if (e.key === "Enter" && $("modal").classList.contains("on") && $("ok")) $("ok").click();
-  else if (e.key === "Escape") closeModal();
-});
-try { load(); } catch (err) { toast("Could not load saved data: " + err.message); }
+curMonth = thisMonth();
+$("month").value = curMonth;
+notices();
+if (navigator.storage && navigator.storage.persist) { try { navigator.storage.persist(); } catch (e) {} }
+try { load(); } catch (err) { console.error(err); toast("Couldn't load your saved data. Please refresh the page.", "error"); }
+setTimeout(() => document.body.classList.remove("intro"), 1200);
+// warm up the Excel library quietly (never blocks the page; skipped on data saver)
+window.addEventListener("load", () => setTimeout(() => {
+  if (navigator.connection && navigator.connection.saveData) return;
+  loadXlsx().catch(() => {});
+}, 2500));
+})();
 </script>
 </body>
 </html>
