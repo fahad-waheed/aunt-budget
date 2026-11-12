@@ -12,6 +12,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Green Budget">
 <link rel="canonical" href="https://aunt-budget.vercel.app/">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌿%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Green Budget">
@@ -94,6 +96,7 @@ input:focus,select:focus{border-color:var(--leaf);box-shadow:inset 0 3px 6px rgb
 input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,.22)!important;animation:shake .35s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.lbl{display:block;font-weight:700;font-size:14px;margin:8px 0 0}
 .btn{
   font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:14px;padding:10px 16px;margin:3px 0;min-height:46px;
   color:#fff;background:linear-gradient(180deg,#1f8f50,var(--leaf-d));
@@ -125,7 +128,7 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
 @keyframes spin{0%{transform:rotateY(-25deg)}50%{transform:rotateY(25deg)}100%{transform:rotateY(-25deg)}}
 .plant .lf{transform-origin:85px 140px;transition:transform .8s cubic-bezier(.3,1.6,.5,1)}
 .msg{font-weight:700;margin:0 0 8px}
-.tot{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tot{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px}
 .tot>div{
   background:linear-gradient(160deg,#fff,#e6f6df);border-radius:14px;padding:10px 6px;text-align:center;min-width:0;
   box-shadow:0 4px 0 #b9dcb1,0 8px 14px rgba(0,0,0,.14);
@@ -139,16 +142,25 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
 .bar.over i{background:linear-gradient(90deg,#f19a63,var(--bad))}
 .neg{color:var(--bad)}
 
-/* ---------- categories ---------- */
+/* ---------- categories, expenses, bills ---------- */
 .cathead{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap}
 .cathead .name{font-size:18px;font-weight:800;flex:1 1 140px;min-width:0;overflow-wrap:anywhere}
 .cathead .sp{margin-left:auto;display:flex;flex:none}
 .catnums{font-size:14px;color:var(--soft);margin:4px 0;overflow-wrap:anywhere}
-.exp{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;margin-top:6px;border-radius:12px;background:#f1faeb;box-shadow:0 3px 0 #cfe6c8}
-.exp .what{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
-.exp .what small{display:block;color:var(--soft)}
-.exp .amt{margin-left:auto;font-weight:800;flex:none;max-width:45%;overflow-wrap:anywhere;text-align:right}
-.addexp{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;gap:6px;margin-top:10px;align-items:center}
+.exp{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;padding:6px 6px 6px 12px;margin-top:6px;border-radius:12px;background:#f1faeb;box-shadow:0 3px 0 #cfe6c8}
+.exp .what{flex:1 1 130px;min-width:0;overflow-wrap:anywhere}
+.exp .what small{display:block;color:var(--soft);margin-top:1px}
+.exp .amt{font-weight:800;flex:none;max-width:100%;overflow-wrap:anywhere;text-align:right}
+.exp .ctl{margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:2px;flex:none;max-width:100%}
+.exp .btn.sm{margin:0}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;background:#dfeedb;color:#2d4f3a;white-space:nowrap}
+.badge.over{background:var(--bad);color:#fff}
+.badge.near{background:var(--warn);color:#fff}
+.badge.ok{background:var(--good);color:#fff}
+.more{margin:8px 0 0;color:var(--soft);font-size:13px}
+.addexp{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:6px;margin-top:10px}
+.addbtns{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.addbtns .btn{flex:1 1 120px;margin:3px 0}
 .chip{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;color:#fff;background:var(--good);white-space:nowrap}
 .chip.over{background:var(--bad)}.chip.near{background:var(--warn)}
 .empty{text-align:center;color:var(--soft);padding:20px}
@@ -183,11 +195,16 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
 .actions .btn{flex:1 1 120px;margin:3px 0}
 .toast{
   position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;
-  transform:translate(-50%,160%);width:max-content;max-width:calc(100vw - 28px);text-align:center;
+  transform:translate(-50%,160%);width:max-content;max-width:calc(100vw - 28px);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 12px;text-align:center;
   background:#0f3d2e;color:#fff;padding:12px 16px;border-radius:14px;font-weight:700;pointer-events:none;visibility:hidden;
   box-shadow:0 10px 24px rgba(0,0,0,.4);transition:transform .4s cubic-bezier(.3,1.4,.5,1),visibility .4s;
 }
 .toast.on{transform:translate(-50%,0);visibility:visible}
+.toast.act.on{pointer-events:auto}
+.toast button{font:inherit;font-weight:800;color:#fff;background:rgba(255,255,255,.22);border:0;border-radius:10px;padding:8px 16px;min-height:42px;cursor:pointer;text-decoration:underline}
+.toast button[hidden]{display:none}
+.toast #toastMsg{min-width:0;max-width:100%;overflow-wrap:anywhere}
 .toast.success{background:#14683a}
 .toast.error{background:#a82a2a}
 .toast.info{background:#7a4a0b}
@@ -196,7 +213,6 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
 @media(max-width:600px){
   .hero{grid-template-columns:minmax(0,1fr);justify-items:center;gap:8px}
   .hero>div:last-child{width:100%}
-  .tot{grid-template-columns:repeat(2,minmax(0,1fr))}
   .card{padding:14px;border-radius:18px}
 }
 @media(max-width:480px){
@@ -204,8 +220,6 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
   .tools .monthin{grid-column:1/-1;width:100%}
   .tools .btn{padding:6px 4px;font-size:13px;line-height:1.15}
   .row2{grid-template-columns:minmax(0,1fr)}
-  .addexp{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .addexp .btn{grid-column:1/-1}
   .actions .btn{flex-basis:100%}
 }
 @media(max-width:360px){
@@ -238,6 +252,8 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
   </header>
 
   <div id="notices"></div>
+  <div id="update"></div>
+  <div id="install"></div>
   <div id="banner"></div>
 
   <main>
@@ -267,18 +283,25 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
         <div>
           <p class="msg" id="msg">Set your budget to plant your seed 🌱</p>
           <div class="tot">
-            <div><small>Budget</small><b id="tB">0</b></div>
-            <div><small>Spent</small><b id="tS">0</b></div>
-            <div><small>Left</small><b id="tL">0</b></div>
-            <div><small>Unplanned</small><b id="tU">0</b></div>
+            <div><small>Budget</small><b id="tB">Rs 0</b></div>
+            <div><small>Spent</small><b id="tS">Rs 0</b></div>
+            <div><small>Unpaid bills</small><b id="tP">Rs 0</b></div>
+            <div><small>Left</small><b id="tL">Rs 0</b></div>
+            <div><small>Unplanned</small><b id="tU">Rs 0</b></div>
           </div>
           <div class="bar" id="bar"><i id="barfill"></i></div>
           <div class="row2" style="margin-top:10px">
-            <input id="budgetIn" type="number" inputmode="decimal" min="0" step="any" placeholder="Monthly budget" aria-label="Monthly budget">
+            <input id="budgetIn" type="number" inputmode="decimal" min="0" step="any" placeholder="Monthly budget (Rs)" aria-label="Monthly budget in rupees">
             <button type="button" class="btn" data-act="budget">Save budget</button>
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- Bills to pay -->
+    <section class="card" id="billsCard" data-tilt hidden aria-label="Bills to pay">
+      <h2>📅 Bills to pay</h2>
+      <div id="billsList"></div>
     </section>
 
     <!-- Add category -->
@@ -286,7 +309,7 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
       <h2>🌱 New category</h2>
       <div class="row2">
         <input id="cn" placeholder="e.g. Groceries" maxlength="40" autocomplete="off" aria-label="Category name">
-        <input id="cb" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount for it" aria-label="Amount for this category">
+        <input id="cb" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount for it (Rs)" aria-label="Amount for this category in rupees">
       </div>
       <button type="button" class="btn" data-act="addcat">Add category</button>
     </section>
@@ -298,6 +321,7 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
     <nav aria-label="Footer">
       <a href="#top" data-act="top">↑ Back to top</a>
       <button type="button" class="linkbtn" data-act="how">How it works</button>
+      <button type="button" class="linkbtn" id="fInstall" data-act="installhelp">Install app</button>
       <button type="button" class="linkbtn" data-act="privacy">Privacy</button>
       <button type="button" class="linkbtn" data-act="backup">Backup</button>
     </nav>
@@ -307,7 +331,7 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
 
 <!-- Modal -->
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="dtitle"><div class="dialog" id="dialog" tabindex="-1"></div></div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastAct" hidden></button></div>
 
 <script>
 (function () {
@@ -317,28 +341,55 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
 const $ = id => document.getElementById(id);
 const PREFIX = "greenbudget:";
 const MAXAMT = 1e9;
+const CUR = "Rs";
 const key = m => PREFIX + m;
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-3);
 const round2 = n => Math.round((+n + Number.EPSILON) * 100) / 100;
 const fmt = n => Number(n || 0).toLocaleString(undefined, {maximumFractionDigits: 2});
+const money = n => (n < 0 ? "-" : "") + CUR + " " + fmt(Math.abs(n));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const pad = n => String(n).padStart(2, "0");
 const today = () => { const d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
 const mname = m => new Date(+m.slice(0, 4), +m.slice(5, 7) - 1, 1).toLocaleDateString(undefined, {month: "long", year: "numeric"});
+const isoOK = s => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(new Date(s + "T00:00:00").getTime());
+const parseISO = s => { const p = s.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+const fmtDate = s => {
+  if (!isoOK(s)) return "";
+  const d = parseISO(s), o = {day: "numeric", month: "short"};
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = "numeric";
+  return d.toLocaleDateString(undefined, o);
+};
+const daysUntil = s => Math.round((parseISO(s) - parseISO(today())) / 86400000);
+function dueInfo(due) {
+  const n = daysUntil(due);
+  if (n < 0) return {text: "Overdue by " + (-n) + " day" + (n === -1 ? "" : "s"), cls: "over"};
+  if (n === 0) return {text: "Due today", cls: "near"};
+  if (n <= 3) return {text: "Due in " + n + " day" + (n === 1 ? "" : "s"), cls: "near"};
+  return {text: "Due " + fmtDate(due), cls: ""};
+}
 const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canTilt = window.matchMedia && matchMedia("(hover:hover) and (pointer:fine)").matches && !reduceMotion;
+const standalone = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
 
-/* ---------------- toast (success / error / info) ---------------- */
+/* ---------------- toast (success / error / info, optional Undo) ---------------- */
 let toastTimer;
-function toast(msg, type) {
+function toast(msg, type, action) {
   type = type || "info";
-  const t = $("toast");
-  t.className = "toast " + type;
-  t.textContent = (type === "success" ? "✅ " : type === "error" ? "⚠️ " : "ℹ️ ") + msg;
+  const t = $("toast"), btn = $("toastAct");
+  t.className = "toast " + type + (action ? " act" : "");
+  $("toastMsg").textContent = (type === "success" ? "✅ " : type === "error" ? "⚠️ " : "ℹ️ ") + msg;
+  if (action) {
+    btn.hidden = false;
+    btn.textContent = action.label;
+    btn.onclick = () => {
+      t.classList.remove("on");
+      try { action.fn(); } catch (e) { console.error(e); toast("That didn't work. Please try again.", "error"); }
+    };
+  } else { btn.hidden = true; btn.onclick = null; }
   void t.offsetWidth;
   t.classList.add("on");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove("on"), Math.max(3400, msg.length * 55));
+  toastTimer = setTimeout(() => t.classList.remove("on"), action ? 7000 : Math.max(3400, msg.length * 55));
 }
 function bad(input, msg) {
   if (input) {
@@ -369,7 +420,8 @@ function months() {
   try { return Object.keys(localStorage).filter(k => k.indexOf(PREFIX) === 0).map(k => k.slice(PREFIX.length)).filter(m => /^\d{4}-\d{2}$/.test(m)).sort(); }
   catch (e) { return []; }
 }
-// heal / validate a saved month so one bad entry can never break the page
+const isPaid = e => e.paid !== false;
+// heal / validate a saved month so one bad entry can never break the page (old saves without bill fields still load)
 function normalize(d, m) {
   if (!d || typeof d !== "object" || !Array.isArray(d.categories)) return null;
   return {
@@ -379,9 +431,19 @@ function normalize(d, m) {
       id: String(c.id || uid()),
       name: String(c.name || "Category").slice(0, 40),
       limit: Math.max(0, +c.limit || 0),
-      expenses: (Array.isArray(c.expenses) ? c.expenses : []).filter(e => e && isFinite(+e.amount)).map(e => ({
-        id: String(e.id || uid()), note: String(e.note || "Expense").slice(0, 60), amount: +e.amount, date: String(e.date || "")
-      }))
+      expenses: (Array.isArray(c.expenses) ? c.expenses : []).filter(e => e && isFinite(+e.amount)).map(e => {
+        const due = isoOK(String(e.due || "")) ? String(e.due) : "";
+        return {
+          id: String(e.id || uid()),
+          note: String(e.note || "Expense").slice(0, 60),
+          amount: +e.amount,
+          date: String(e.date || ""),
+          due: due,
+          paid: due ? e.paid !== false : true,
+          paidDate: isoOK(String(e.paidDate || "")) ? String(e.paidDate) : "",
+          carried: !!e.carried
+        };
+      })
     }))
   };
 }
@@ -398,13 +460,16 @@ function load() {
   const m = curMonth;
   doc = readMonth(m);
   if (!doc) {
-    // new month: copy the last month's budget and categories with empty expenses
+    // new month: copy last month's budget and categories; unpaid bills carry over so they are never forgotten
     const prev = months().filter(x => x < m).pop();
     const p = prev ? readMonth(prev) : null;
     doc = {
       id: m,
       budget: p ? p.budget : 0,
-      categories: p ? p.categories.map(c => ({id: uid(), name: c.name, limit: c.limit, expenses: []})) : []
+      categories: p ? p.categories.map(c => ({
+        id: uid(), name: c.name, limit: c.limit,
+        expenses: c.expenses.filter(e => !isPaid(e)).map(e => ({id: uid(), note: e.note, amount: e.amount, date: e.date, due: e.due, paid: false, paidDate: "", carried: true}))
+      })) : []
     };
   }
   $("budgetIn").value = doc.budget || "";
@@ -421,11 +486,16 @@ function save() {
 }
 
 /* ---------------- maths ---------------- */
-const catSpent = c => round2(c.expenses.reduce((s, e) => s + +e.amount, 0));
+const sumAmt = list => round2(list.reduce((s, e) => s + +e.amount, 0));
+const catPaid = c => sumAmt(c.expenses.filter(isPaid));
+const catUnpaid = c => sumAmt(c.expenses.filter(e => !isPaid(e)));
+const catUsed = c => round2(catPaid(c) + catUnpaid(c));
 function totals() {
-  const spent = round2(doc.categories.reduce((s, c) => s + catSpent(c), 0));
+  const spent = round2(doc.categories.reduce((s, c) => s + catPaid(c), 0));
+  const unpaid = round2(doc.categories.reduce((s, c) => s + catUnpaid(c), 0));
+  const used = round2(spent + unpaid);
   const planned = round2(doc.categories.reduce((s, c) => s + +c.limit, 0));
-  return {budget: +doc.budget, spent, left: round2(doc.budget - spent), planned, unplanned: round2(doc.budget - planned)};
+  return {budget: +doc.budget, spent, unpaid, used, left: round2(doc.budget - used), planned, unplanned: round2(doc.budget - planned)};
 }
 function parseAmount(s) {
   s = String(s == null ? "" : s).trim().replace(",", ".");
@@ -435,19 +505,40 @@ function parseAmount(s) {
   return round2(n);
 }
 const findCat = id => doc.categories.find(c => c.id === id);
+const findExp = (c, id) => c && c.expenses.find(e => e.id === id);
 const cleanName = s => String(s).trim().replace(/\s+/g, " ").slice(0, 40);
 
 /* ---------------- render ---------------- */
+function expRow(c, e) {
+  const bill = !!e.due, unpaid = bill && !isPaid(e);
+  let sub;
+  if (bill) {
+    sub = unpaid
+      ? '<span class="badge ' + dueInfo(e.due).cls + '">' + esc(dueInfo(e.due).text) + '</span>'
+      : '<span class="badge ok">Paid' + (e.paidDate ? " " + esc(fmtDate(e.paidDate)) : "") + '</span>';
+    if (e.carried) sub += ' <span class="badge">from last month</span>';
+  } else sub = esc(fmtDate(e.date) || e.date);
+  const ids = ' data-c="' + c.id + '" data-e="' + e.id + '"';
+  return '<div class="exp"><span class="what">' + esc(e.note) + '<small>' + sub + '</small></span>' +
+    '<span class="amt">' + money(e.amount) + '</span>' +
+    '<span class="ctl">' +
+      (unpaid ? '<button type="button" class="btn sm" data-act="togglepaid"' + ids + '>✓ Paid</button>' : '') +
+      (bill && !unpaid ? '<button type="button" class="icon" data-act="togglepaid"' + ids + ' aria-label="Mark ' + esc(e.note) + ' as unpaid">↩️</button>' : '') +
+      '<button type="button" class="icon" data-act="editexp"' + ids + ' aria-label="Edit ' + esc(e.note) + '">✏️</button>' +
+      '<button type="button" class="icon" data-act="delexp"' + ids + ' aria-label="Remove ' + esc(e.note) + '">✕</button>' +
+    '</span></div>';
+}
 function render() {
   const t = totals();
-  $("tB").textContent = fmt(t.budget);
-  $("tS").textContent = fmt(t.spent);
-  $("tL").textContent = fmt(t.left);
+  $("tB").textContent = money(t.budget);
+  $("tS").textContent = money(t.spent);
+  $("tP").textContent = money(t.unpaid);
+  $("tL").textContent = money(t.left);
   $("tL").className = t.left < 0 ? "neg" : "";
-  $("tU").textContent = fmt(t.unplanned);
+  $("tU").textContent = money(t.unplanned);
   $("tU").className = t.unplanned < 0 ? "neg" : "";
 
-  const pctUsed = t.budget > 0 ? Math.min(100, t.spent / t.budget * 100) : 0;
+  const pctUsed = t.budget > 0 ? Math.min(100, t.used / t.budget * 100) : 0;
   $("barfill").style.width = pctUsed + "%";
   $("bar").classList.toggle("over", t.left < 0);
 
@@ -456,12 +547,24 @@ function render() {
 
   let m = "Set your budget to plant your seed 🌱";
   if (t.budget > 0) {
-    if (t.left < 0) m = "Over budget by " + fmt(-t.left) + ". Edit your budget or trim spending 🥀";
+    if (t.left < 0) m = "Over budget by " + money(-t.left) + ". Edit your budget or trim spending 🥀";
     else if (health < .2) m = "Running low. Your plant needs care 🍂";
     else if (health < .5) m = "Half the budget used. Steady growth 🌿";
     else m = "Lovely and green. Plenty left 🌳";
   }
   $("msg").textContent = m;
+
+  // bills to pay (unpaid bills, soonest first)
+  const bills = [];
+  doc.categories.forEach(c => c.expenses.forEach(e => { if (e.due && !isPaid(e)) bills.push({c: c, e: e}); }));
+  bills.sort((a, b) => a.e.due < b.e.due ? -1 : a.e.due > b.e.due ? 1 : 0);
+  $("billsCard").hidden = !bills.length;
+  $("billsList").innerHTML = bills.slice(0, 6).map(x => {
+    const di = dueInfo(x.e.due);
+    return '<div class="exp"><span class="what">' + esc(x.e.note) + '<small>' + esc(x.c.name) + ' · <span class="badge ' + di.cls + '">' + esc(di.text) + '</span></small></span>' +
+      '<span class="amt">' + money(x.e.amount) + '</span>' +
+      '<span class="ctl"><button type="button" class="btn sm" data-act="togglepaid" data-c="' + x.c.id + '" data-e="' + x.e.id + '">✓ Paid</button></span></div>';
+  }).join("") + (bills.length > 6 ? '<p class="more">+ ' + (bills.length - 6) + ' more bills inside their categories</p>' : "");
 
   const list = $("list"), keep = {};
   list.querySelectorAll("input").forEach(i => { if (i.value) keep[i.id] = i.value; });
@@ -470,11 +573,11 @@ function render() {
     list.innerHTML = '<div class="card empty"><span class="big">🪴</span>No categories yet. Add one above, like Groceries or Electricity.</div>';
   } else {
     list.innerHTML = doc.categories.map(c => {
-      const sp = catSpent(c), left = round2(c.limit - sp);
-      const pct = c.limit > 0 ? sp / c.limit * 100 : (sp > 0 ? 101 : 0);
-      const chip = left < 0 ? '<span class="chip over">Over by ' + fmt(-left) + '</span>'
-        : pct >= 80 ? '<span class="chip near">' + fmt(left) + ' left</span>'
-        : '<span class="chip">' + fmt(left) + ' left</span>';
+      const paid = catPaid(c), un = catUnpaid(c), used = round2(paid + un), left = round2(c.limit - used);
+      const pct = c.limit > 0 ? used / c.limit * 100 : (used > 0 ? 101 : 0);
+      const chip = left < 0 ? '<span class="chip over">Over by ' + money(-left) + '</span>'
+        : pct >= 80 ? '<span class="chip near">' + money(left) + ' left</span>'
+        : '<span class="chip">' + money(left) + ' left</span>';
       return '<section class="card cat" data-tilt>' +
         '<div class="cathead">' +
           '<span class="name">🍃 ' + esc(c.name) + '</span>' + chip +
@@ -483,17 +586,17 @@ function render() {
             '<button type="button" class="icon" data-act="delcat" data-c="' + c.id + '" aria-label="Delete ' + esc(c.name) + '">🗑️</button>' +
           '</span>' +
         '</div>' +
-        '<div class="catnums">Budget ' + fmt(c.limit) + ' · Spent ' + fmt(sp) + ' · Left <b class="' + (left < 0 ? "neg" : "") + '">' + fmt(left) + '</b></div>' +
+        '<div class="catnums">Budget ' + money(c.limit) + ' · Spent ' + money(paid) + (un > 0 ? ' · Unpaid ' + money(un) : '') +
+          ' · Left <b class="' + (left < 0 ? "neg" : "") + '">' + money(left) + '</b></div>' +
         '<div class="bar ' + (left < 0 ? "over" : "") + '"><i style="width:' + Math.min(100, pct) + '%"></i></div>' +
-        c.expenses.map(e =>
-          '<div class="exp"><span class="what">' + esc(e.note) + '<small>' + esc(e.date) + '</small></span>' +
-          '<span class="amt">' + fmt(e.amount) + '</span>' +
-          '<button type="button" class="icon" data-act="delexp" data-c="' + c.id + '" data-e="' + e.id + '" aria-label="Remove ' + esc(e.note) + '">✕</button></div>'
-        ).join("") +
+        c.expenses.map(e => expRow(c, e)).join("") +
         '<div class="addexp">' +
-          '<input id="en-' + c.id + '" placeholder="What for?" maxlength="60" autocomplete="off" aria-label="What did you buy in ' + esc(c.name) + '">' +
-          '<input id="ea-' + c.id + '" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount" aria-label="Amount spent in ' + esc(c.name) + '">' +
-          '<button type="button" class="btn sm" data-act="addexp" data-c="' + c.id + '">+ Spend</button>' +
+          '<input id="en-' + c.id + '" placeholder="What for?" maxlength="60" autocomplete="off" aria-label="What for in ' + esc(c.name) + '">' +
+          '<input id="ea-' + c.id + '" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount (Rs)" aria-label="Amount in rupees for ' + esc(c.name) + '">' +
+          '<div class="addbtns">' +
+            '<button type="button" class="btn sm" data-act="addexp" data-c="' + c.id + '">+ Spend</button>' +
+            '<button type="button" class="btn sm sec" data-act="bill" data-c="' + c.id + '">📅 Add bill</button>' +
+          '</div>' +
         '</div>' +
       '</section>';
     }).join("");
@@ -514,7 +617,7 @@ function paintPlant(h) {
   $("stem").setAttribute("d", "M85 150 C85 120 85 " + ((150 + top) / 2) + " 85 " + top);
 }
 
-/* ---------------- notices ---------------- */
+/* ---------------- notices & install ---------------- */
 function notices() {
   let html = "";
   if (!storageOK) {
@@ -531,6 +634,21 @@ function banner() {
   $("banner").innerHTML = prev && !done
     ? '<div class="note">🍂 ' + esc(mname(prev)) + ' is finished. <button type="button" class="btn sm" data-act="xlprev" data-m="' + prev + '">Download ' + esc(mname(prev)) + '</button></div>'
     : "";
+}
+let deferredPrompt = null;
+function showInstall() {
+  $("install").innerHTML = (!deferredPrompt || standalone() || lsGet("gb-no-install")) ? "" :
+    '<div class="note">📲 Install Green Budget for a home-screen icon and offline use. ' +
+    '<button type="button" class="btn sm" data-act="install">Install</button>' +
+    '<button type="button" class="btn sm sec" data-act="installno">Not now</button></div>';
+}
+function showUpdate() {
+  $("update").innerHTML = '<div class="note">🌿 A new version is ready. <button type="button" class="btn sm" data-act="reload">Refresh</button></div>';
+}
+function dueReminder() {
+  let n = 0;
+  doc.categories.forEach(c => c.expenses.forEach(e => { if (e.due && !isPaid(e) && daysUntil(e.due) <= 3) n++; }));
+  if (n) toast("You have " + n + " bill" + (n > 1 ? "s" : "") + " due soon or overdue 📅", "info");
 }
 
 /* ---------------- modal ---------------- */
@@ -560,22 +678,35 @@ function openInfo(title, body) {
   wire(null);
 }
 
+/* ---------------- undo ---------------- */
+function undoTo(snapshot, month) {
+  const d = normalize(JSON.parse(snapshot), month);
+  if (!d) return toast("Couldn't undo that.", "error");
+  if (month !== curMonth) { curMonth = month; $("month").value = month; }
+  doc = d;
+  $("budgetIn").value = doc.budget || "";
+  if (save()) toast("Put back ✓", "success");
+}
+function removedToast(msg, snapshot, month) {
+  toast(msg, "success", {label: "Undo", fn: () => undoTo(snapshot, month)});
+}
+
 /* ---------------- budget & category actions ---------------- */
 function askRaiseBudget(reason, suggested) {
-  openModal('<h3 id="dtitle">🥀 Over budget</h3><p>' + esc(reason) + '</p><p>Set a new monthly budget:</p>' +
-    '<input id="m-b" type="number" inputmode="decimal" min="0" step="any" value="' + Math.ceil(suggested) + '" aria-label="New monthly budget">' +
+  openModal('<h3 id="dtitle">🥀 Over budget</h3><p>' + esc(reason) + '</p><p>Set a new monthly budget (Rs):</p>' +
+    '<input id="m-b" type="number" inputmode="decimal" min="0" step="any" value="' + Math.ceil(suggested) + '" aria-label="New monthly budget in rupees">' +
     '<div class="actions"><button type="button" class="btn" id="ok">Update budget</button><button type="button" class="btn sec" id="no">Leave it</button></div>', true);
   wire(() => {
     const inp = $("m-b"), v = parseAmount(inp.value);
     if (v === null) return bad(inp, "Please enter a valid budget amount.");
     doc.budget = v; $("budgetIn").value = v; closeModal();
-    if (save()) toast("Budget updated to " + fmt(v) + " 🌳", "success");
+    if (save()) toast("Budget updated to " + money(v) + " 🌳", "success");
   });
   $("no").onclick = () => { closeModal(); toast("Okay, your budget stays as it is.", "info"); };
 }
 function askRaiseCat(c, reason) {
-  openModal('<h3 id="dtitle">🍂 Category over budget</h3><p>' + esc(reason) + '</p><p>New amount for “' + esc(c.name) + '”:</p>' +
-    '<input id="m-b" type="number" inputmode="decimal" min="0" step="any" value="' + Math.ceil(catSpent(c)) + '" aria-label="New amount for ' + esc(c.name) + '">' +
+  openModal('<h3 id="dtitle">🍂 Category over budget</h3><p>' + esc(reason) + '</p><p>New amount for “' + esc(c.name) + '” (Rs):</p>' +
+    '<input id="m-b" type="number" inputmode="decimal" min="0" step="any" value="' + Math.ceil(catUsed(c)) + '" aria-label="New amount for ' + esc(c.name) + '">' +
     '<div class="actions"><button type="button" class="btn" id="ok">Update</button><button type="button" class="btn sec" id="no">Leave it</button></div>', true);
   wire(() => {
     const inp = $("m-b"), v = parseAmount(inp.value);
@@ -584,8 +715,8 @@ function askRaiseCat(c, reason) {
     if (!save()) return;
     const t = totals();
     if (t.budget > 0 && t.planned > t.budget) {
-      askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
-    } else toast("“" + c.name + "” updated to " + fmt(v) + " 🌳", "success");
+      askRaiseBudget("Your categories now add up to " + money(t.planned) + ", more than your budget of " + money(t.budget) + ".", t.planned);
+    } else toast("“" + c.name + "” updated to " + money(v) + " 🌳", "success");
   });
 }
 function editCat(cid) {
@@ -593,7 +724,7 @@ function editCat(cid) {
   if (!c) return toast("That category no longer exists. Please refresh the page.", "error");
   openModal('<h3 id="dtitle">✏️ Edit category</h3>' +
     '<input id="m-n" maxlength="40" value="' + esc(c.name) + '" aria-label="Category name" autocomplete="off">' +
-    '<input id="m-b" type="number" inputmode="decimal" min="0" step="any" value="' + c.limit + '" aria-label="Category amount">' +
+    '<input id="m-b" type="number" inputmode="decimal" min="0" step="any" value="' + c.limit + '" aria-label="Category amount in rupees">' +
     '<div class="actions"><button type="button" class="btn" id="ok">Save</button><button type="button" class="btn sec" id="no">Cancel</button></div>', true);
   wire(() => {
     const ni = $("m-n"), bi = $("m-b"), n = cleanName(ni.value), b = parseAmount(bi.value);
@@ -604,18 +735,38 @@ function editCat(cid) {
     if (!save()) return;
     toast("Category updated 🌿", "success");
     const t = totals();
-    if (t.budget > 0 && t.planned > t.budget) askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
+    if (t.budget > 0 && t.planned > t.budget) askRaiseBudget("Your categories now add up to " + money(t.planned) + ", more than your budget of " + money(t.budget) + ".", t.planned);
   });
 }
 function delCat(cid) {
   const c = findCat(cid);
   if (!c) return toast("That category no longer exists. Please refresh the page.", "error");
-  openModal('<h3 id="dtitle">Delete “' + esc(c.name) + '”?</h3><p>Its ' + c.expenses.length + ' expense(s) will be removed too.</p>' +
+  openModal('<h3 id="dtitle">Delete “' + esc(c.name) + '”?</h3><p>Its ' + c.expenses.length + ' item(s) will be removed too.</p>' +
     '<div class="actions"><button type="button" class="btn warn" id="ok">Yes, delete</button><button type="button" class="btn sec" id="no">Keep it</button></div>');
   wire(() => {
+    const snap = JSON.stringify(doc), month = doc.id;
     doc.categories = doc.categories.filter(x => x.id !== cid); closeModal();
-    if (save()) toast("Category deleted", "success");
+    if (save()) removedToast("Category deleted", snap, month);
   });
+}
+
+/* ---------------- spending, bills, editing ---------------- */
+// after any change that adds money to a category: save, then warn / offer to raise the amount if it went over
+function settle(c, beforeLeft, beforeCat, okMsg) {
+  if (!save()) return false;
+  const t = totals(), left = round2(c.limit - catUsed(c));
+  if (t.budget > 0 && t.left < 0 && beforeLeft >= 0) {
+    askRaiseBudget("Your spending and unpaid bills add up to " + money(t.used) + ", more than your monthly budget of " + money(t.budget) + ".", t.used);
+  } else if (left < 0 && beforeCat >= 0) {
+    askRaiseCat(c, "“" + c.name + "” is over its amount of " + money(c.limit) + " by " + money(-left) + ".");
+  } else if (t.budget <= 0) {
+    toast(okMsg + " Set your monthly budget to see what is left.", "success");
+  } else if (t.left < 0) {
+    toast(okMsg + " You are over your monthly budget by " + money(-t.left) + ".", "info");
+  } else {
+    toast(okMsg + " " + money(t.left) + " left this month.", "success");
+  }
+  return true;
 }
 function addExp(cid) {
   const c = findCat(cid);
@@ -624,22 +775,67 @@ function addExp(cid) {
   const amt = parseAmount(ai.value);
   if (amt === null || amt <= 0) return bad(ai, "Please enter how much you spent (more than 0).");
   const note = (ni.value.trim() || "Expense").slice(0, 60);
-  const before = totals(), beforeLeft = round2(c.limit - catSpent(c));
-  c.expenses.push({id: uid(), note, amount: amt, date: today()});
+  const beforeLeft = totals().left, beforeCat = round2(c.limit - catUsed(c));
+  c.expenses.push({id: uid(), note: note, amount: amt, date: today(), due: "", paid: true, paidDate: "", carried: false});
   ni.value = ai.value = "";
-  if (!save()) return;
-  const t = totals(), left = round2(c.limit - catSpent(c));
-  if (t.budget > 0 && t.left < 0 && before.left >= 0) {
-    askRaiseBudget("You have spent " + fmt(t.spent) + ", which is more than your monthly budget of " + fmt(t.budget) + ".", t.spent);
-  } else if (left < 0 && beforeLeft >= 0) {
-    askRaiseCat(c, "“" + c.name + "” is over its amount of " + fmt(c.limit) + " by " + fmt(-left) + ".");
-  } else if (t.budget <= 0) {
-    toast("Added “" + note + "”. Set your monthly budget to see what is left.", "success");
-  } else if (t.left < 0) {
-    toast("Added, but you are over your monthly budget by " + fmt(-t.left) + ".", "info");
-  } else {
-    toast("Added “" + note + "”. " + fmt(t.left) + " left this month.", "success");
-  }
+  settle(c, beforeLeft, beforeCat, "Added “" + note + "”.");
+}
+function addBill(cid) {
+  const c = findCat(cid);
+  if (!c) return toast("That category no longer exists. Please refresh the page.", "error");
+  const ni = $("en-" + cid), ai = $("ea-" + cid);
+  openModal('<h3 id="dtitle">📅 Add a bill</h3><p>A bill you still have to pay. It counts against your budget now. Tap <b>Paid</b> when you pay it.</p>' +
+    '<input id="m-n" maxlength="60" placeholder="Bill name, e.g. Electricity" value="' + esc(ni.value) + '" aria-label="Bill name" autocomplete="off">' +
+    '<input id="m-a" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount (Rs)" value="' + esc(ai.value) + '" aria-label="Bill amount in rupees">' +
+    '<label class="lbl" for="m-d">Due date</label><input id="m-d" type="date" value="' + today() + '">' +
+    '<div class="actions"><button type="button" class="btn" id="ok">Add bill</button><button type="button" class="btn sec" id="no">Cancel</button></div>', true);
+  wire(() => {
+    const nI = $("m-n"), aI = $("m-a"), dI = $("m-d");
+    const amt = parseAmount(aI.value);
+    if (amt === null || amt <= 0) return bad(aI, "Please enter the bill amount (more than 0).");
+    if (!isoOK(dI.value)) return bad(dI, "Please pick the due date.");
+    const note = (nI.value.trim() || "Bill").slice(0, 60);
+    const beforeLeft = totals().left, beforeCat = round2(c.limit - catUsed(c));
+    c.expenses.push({id: uid(), note: note, amount: amt, date: today(), due: dI.value, paid: false, paidDate: "", carried: false});
+    ni.value = ai.value = "";
+    closeModal();
+    settle(c, beforeLeft, beforeCat, "Bill “" + note + "” added.");
+  });
+}
+function editExp(cid, eid) {
+  const c = findCat(cid), e = findExp(c, eid);
+  if (!e) return toast("That item no longer exists. Please refresh the page.", "error");
+  const bill = !!e.due;
+  openModal('<h3 id="dtitle">✏️ Edit ' + (bill ? "bill" : "expense") + '</h3>' +
+    '<input id="m-n" maxlength="60" value="' + esc(e.note) + '" aria-label="Name" autocomplete="off">' +
+    '<input id="m-a" type="number" inputmode="decimal" min="0" step="any" value="' + e.amount + '" aria-label="Amount in rupees">' +
+    '<label class="lbl" for="m-d">' + (bill ? "Due date" : "Date") + '</label><input id="m-d" type="date" value="' + esc(bill ? e.due : e.date) + '">' +
+    '<div class="actions"><button type="button" class="btn" id="ok">Save</button><button type="button" class="btn sec" id="no">Cancel</button></div>', true);
+  wire(() => {
+    const nI = $("m-n"), aI = $("m-a"), dI = $("m-d");
+    const amt = parseAmount(aI.value);
+    if (amt === null || amt <= 0) return bad(aI, "Please enter an amount (more than 0).");
+    if (!isoOK(dI.value)) return bad(dI, "Please pick a valid date.");
+    const note = (nI.value.trim() || (bill ? "Bill" : "Expense")).slice(0, 60);
+    const beforeLeft = totals().left, beforeCat = round2(c.limit - catUsed(c));
+    e.note = note; e.amount = amt;
+    if (bill) e.due = dI.value; else e.date = dI.value;
+    closeModal();
+    settle(c, beforeLeft, beforeCat, "Updated “" + note + "”.");
+  });
+}
+function togglePaid(cid, eid) {
+  const c = findCat(cid), e = findExp(c, eid);
+  if (!e) return toast("That bill no longer exists. Please refresh the page.", "error");
+  if (isPaid(e)) { e.paid = false; e.paidDate = ""; } else { e.paid = true; e.paidDate = today(); }
+  if (save()) toast(e.paid ? "“" + e.note + "” marked as paid ✓" : "“" + e.note + "” moved back to unpaid", "success");
+}
+function delExp(cid, eid) {
+  const c = findCat(cid), e = findExp(c, eid);
+  if (!e) return toast("That item no longer exists. Please refresh the page.", "error");
+  const snap = JSON.stringify(doc), month = doc.id;
+  c.expenses = c.expenses.filter(x => x.id !== eid);
+  if (save()) removedToast("“" + e.note + "” removed", snap, month);
 }
 
 /* ---------------- Excel / CSV ---------------- */
@@ -647,18 +843,23 @@ function exportExcel(m) {
   m = m || curMonth;
   const d = m === doc.id ? doc : readMonth(m);
   if (!d) return toast("There is nothing saved for " + mname(m) + " yet.", "error");
-  const rows = [["Category", "Category budget", "Item", "Amount", "Date"]];
-  let spent = 0, planned = 0;
+  const rows = [["Category", "Category budget (Rs)", "Item", "Amount (Rs)", "Date", "Status", "Due date", "Paid date"]];
+  let spent = 0, unpaid = 0, planned = 0;
   d.categories.forEach(c => {
     planned += +c.limit;
-    if (!c.expenses.length) rows.push([c.name, +c.limit, "", "", ""]);
-    c.expenses.forEach(e => { spent += +e.amount; rows.push([c.name, +c.limit, e.note, +e.amount, e.date]); });
+    if (!c.expenses.length) rows.push([c.name, +c.limit, "", "", "", "", "", ""]);
+    c.expenses.forEach(e => {
+      const paid = isPaid(e);
+      if (paid) spent += +e.amount; else unpaid += +e.amount;
+      rows.push([c.name, +c.limit, e.note, +e.amount, e.date, paid ? "Paid" : "Unpaid", e.due || "", e.paidDate || ""]);
+    });
   });
-  rows.push([], ["Monthly budget", +d.budget], ["Total spent", round2(spent)], ["Left", round2(d.budget - spent)], ["Planned in categories", round2(planned)]);
+  rows.push([], ["Monthly budget (Rs)", +d.budget], ["Paid so far (Rs)", round2(spent)], ["Unpaid bills (Rs)", round2(unpaid)],
+    ["Left (Rs)", round2(d.budget - spent - unpaid)], ["Planned in categories (Rs)", round2(planned)]);
   toast("Preparing your Excel file…", "info");
   loadXlsx().then(() => {
     const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws["!cols"] = [{wch: 22}, {wch: 16}, {wch: 24}, {wch: 12}, {wch: 12}];
+    ws["!cols"] = [{wch: 22}, {wch: 20}, {wch: 24}, {wch: 14}, {wch: 12}, {wch: 10}, {wch: 12}, {wch: 12}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, m);
     XLSX.writeFile(wb, "budget-" + m + ".xlsx");
@@ -702,7 +903,7 @@ function backupAll() {
   const ms = months();
   if (!ms.length) return toast("Nothing to back up yet. Add a budget or a category first.", "error");
   try {
-    const out = {app: "green-budget", version: 1, exportedAt: new Date().toISOString(), months: {}};
+    const out = {app: "green-budget", version: 2, exportedAt: new Date().toISOString(), months: {}};
     ms.forEach(m => { const d = readMonth(m); if (d) out.months[m] = d; });
     downloadBlob(new Blob([JSON.stringify(out, null, 2)], {type: "application/json"}), "green-budget-backup-" + today() + ".json");
     toast("Backup saved 💾 (" + ms.length + " month" + (ms.length > 1 ? "s" : "") + "). Keep the file somewhere safe.", "success");
@@ -729,8 +930,8 @@ $("restoreFile").addEventListener("change", e => {
     });
     const keys = Object.keys(good);
     if (!keys.length) return toast("No usable months were found in that backup.", "error");
-    const spentOf = d => round2(d.categories.reduce((s, c) => s + c.expenses.reduce((a, x) => a + +x.amount, 0), 0));
-    const items = keys.map(m => '<li><b>' + esc(mname(m)) + '</b>: ' + good[m].categories.length + ' categories, spent ' + fmt(spentOf(good[m])) + ' ' +
+    const spentOf = d => round2(d.categories.reduce((s, c) => s + catUsed(c), 0));
+    const items = keys.map(m => '<li><b>' + esc(mname(m)) + '</b>: ' + good[m].categories.length + ' categories, ' + money(spentOf(good[m])) + ' used ' +
       (lsGet(key(m)) ? '<span class="chip near">replaces current</span>' : '<span class="chip">new</span>') + '</li>').join("");
     openModal('<h3 id="dtitle">📂 Restore backup?</h3><p>This backup contains:</p><ul>' + items + '</ul>' +
       '<p>Only these months are changed. Every other month on this phone stays as it is.</p>' +
@@ -752,17 +953,38 @@ $("restoreFile").addEventListener("change", e => {
 /* ---------------- footer info ---------------- */
 const HOW = '<ol><li>Type your monthly budget and tap <b>Save budget</b>.</li>' +
   '<li>Add categories like Groceries or Electricity, each with an amount.</li>' +
-  '<li>Inside a category, tap <b>+ Spend</b> whenever you buy something. The amount is taken off automatically.</li>' +
-  '<li>If you spend more than planned, the plant wilts and you can change the budget.</li>' +
-  '<li>At the end of the month tap <b>Excel</b> or <b>Backup</b> to keep a copy.</li></ol>';
+  '<li>Inside a category tap <b>+ Spend</b> when you buy something, or <b>📅 Add bill</b> for a bill you still have to pay.</li>' +
+  '<li>Bills show in <b>Bills to pay</b> at the top with their due dates. Tap <b>✓ Paid</b> when you pay one.</li>' +
+  '<li>Tap ✏️ on an item to fix it. If you remove something by mistake, tap <b>Undo</b> straight away.</li>' +
+  '<li>If you go over, the plant wilts and you can change the budget.</li>' +
+  '<li>At the end of the month tap <b>Excel</b> or <b>Backup</b> to keep a copy.</li></ol>' +
+  '<p>Unpaid bills count against your budget right away, so <b>Left</b> shows what you can still spend after paying them. Bills you have not paid by the end of the month move to the next month.</p>';
 const PRIVACY = '<p>Green Budget has no accounts and no server. Everything you type is saved <b>only in this browser on this device</b>, and nothing is sent anywhere.</p>' +
   '<p>Clearing your browser data, using a private tab or getting a new phone removes it, so press <b>Backup</b> regularly. On a new device tap <b>Restore</b> and pick your backup file.</p>';
+const INSTALL = '<p>Installing gives you a Green Budget icon on your home screen, and the app keeps working with a weak or no connection.</p>' +
+  '<ul><li><b>Chrome (Android):</b> tap the ⋮ menu, then <b>Install app</b> or <b>Add to Home screen</b>.</li>' +
+  '<li><b>Samsung Internet:</b> tap the ≡ menu, then <b>Add page to</b>, then <b>Home screen</b>.</li>' +
+  '<li><b>iPhone (Safari):</b> tap Share, then <b>Add to Home Screen</b>.</li></ul>' +
+  '<p>Use the same browser you normally use for this site, so your saved data comes with you. On iPhone an installed app keeps its own separate data, so use Backup and Restore to move it.</p>';
 
 /* ---------------- button dispatcher ---------------- */
 const ACT = {
   top() { window.scrollTo({top: 0, behavior: reduceMotion ? "auto" : "smooth"}); },
   how() { openInfo("🌿 How it works", HOW); },
   privacy() { openInfo("🔒 Your privacy", PRIVACY); },
+  reload() { location.reload(); },
+  install() {
+    if (!deferredPrompt) return ACT.installhelp();
+    const p = deferredPrompt; deferredPrompt = null; $("install").innerHTML = "";
+    p.prompt();
+    if (p.userChoice && p.userChoice.then) p.userChoice.then(r => { if (r && r.outcome !== "accepted") toast("No problem. You can install it later from “Install app” in the footer.", "info"); });
+  },
+  installno() { lsSet("gb-no-install", "1"); $("install").innerHTML = ""; toast("Okay. You can install it anytime from “Install app” in the footer.", "info"); },
+  installhelp() {
+    if (deferredPrompt) return ACT.install();
+    if (standalone()) return toast("Green Budget is already installed on this device.", "info");
+    openInfo("📲 Install Green Budget", INSTALL);
+  },
   excel() { exportExcel(); },
   xlprev(b) { exportExcel(b.dataset.m); },
   backup() { backupAll(); },
@@ -773,9 +995,9 @@ const ACT = {
     doc.budget = v;
     if (!save()) return;
     const t = totals();
-    if (t.budget > 0 && t.planned > t.budget) toast("Budget saved. Your categories add up to " + fmt(t.planned) + ", which is " + fmt(t.planned - t.budget) + " more than your budget.", "info");
-    else if (t.left < 0) toast("Budget saved, but you have already spent " + fmt(-t.left) + " more than it.", "info");
-    else toast("Budget saved 🌱 " + fmt(t.left) + " left to spend.", "success");
+    if (t.budget > 0 && t.planned > t.budget) toast("Budget saved. Your categories add up to " + money(t.planned) + ", which is " + money(t.planned - t.budget) + " more than your budget.", "info");
+    else if (t.left < 0) toast("Budget saved, but you have already used " + money(-t.left) + " more than it.", "info");
+    else toast("Budget saved 🌱 " + money(t.left) + " left to spend.", "success");
   },
   addcat() {
     const ni = $("cn"), ai = $("cb"), name = cleanName(ni.value);
@@ -783,27 +1005,23 @@ const ACT = {
     const amt = parseAmount(ai.value);
     if (amt === null) return bad(ai, "Please enter an amount for this category.");
     if (doc.categories.some(c => c.name.toLowerCase() === name.toLowerCase())) return bad(ni, "You already have a category called “" + name + "”.");
-    doc.categories.push({id: uid(), name, limit: amt, expenses: []});
+    doc.categories.push({id: uid(), name: name, limit: amt, expenses: []});
     ni.value = ai.value = "";
     if (!save()) return;
     const t = totals();
     if (t.budget > 0 && t.planned > t.budget) {
-      askRaiseBudget("Your categories now add up to " + fmt(t.planned) + ", more than your budget of " + fmt(t.budget) + ".", t.planned);
+      askRaiseBudget("Your categories now add up to " + money(t.planned) + ", more than your budget of " + money(t.budget) + ".", t.planned);
     } else if (t.budget <= 0) {
       toast("Category “" + name + "” added 🌱 Don't forget to set your monthly budget.", "success");
     } else toast("Category “" + name + "” added 🌱", "success");
   },
   addexp(b) { addExp(b.dataset.c); },
+  bill(b) { addBill(b.dataset.c); },
   edit(b) { editCat(b.dataset.c); },
+  editexp(b) { editExp(b.dataset.c, b.dataset.e); },
+  togglepaid(b) { togglePaid(b.dataset.c, b.dataset.e); },
   delcat(b) { delCat(b.dataset.c); },
-  delexp(b) {
-    const c = findCat(b.dataset.c);
-    if (!c) return toast("That category no longer exists. Please refresh the page.", "error");
-    const before = c.expenses.length;
-    c.expenses = c.expenses.filter(e => e.id !== b.dataset.e);
-    if (c.expenses.length === before) return;
-    if (save()) toast("Expense removed", "success");
-  }
+  delexp(b) { delExp(b.dataset.c, b.dataset.e); }
 };
 function run(name, el) {
   const fn = ACT[name];
@@ -881,12 +1099,28 @@ if (!reduceMotion) {
   }
 })();
 
+/* ---------------- offline + install ---------------- */
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; showInstall(); });
+window.addEventListener("appinstalled", () => { deferredPrompt = null; $("install").innerHTML = ""; toast("Green Budget is installed 🌿 Open it from your home screen.", "success"); });
+window.addEventListener("offline", () => toast("You are offline. Green Budget still works and saves on your phone.", "info"));
+window.addEventListener("online", () => toast("Back online.", "success"));
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  navigator.serviceWorker.onmessage = e => { if (e.data && e.data.type === "updated") showUpdate(); };
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(err => console.warn("Offline mode unavailable:", err));
+    navigator.serviceWorker.ready.then(() => {
+      if (!lsGet("gb-offline-ready")) { lsSet("gb-offline-ready", "1"); toast("Ready to work offline ✓", "success"); }
+    }).catch(() => {});
+  });
+}
+
 /* ---------------- start ---------------- */
 curMonth = thisMonth();
 $("month").value = curMonth;
 notices();
+if (standalone()) $("fInstall").hidden = true;
 if (navigator.storage && navigator.storage.persist) { try { navigator.storage.persist(); } catch (e) {} }
-try { load(); } catch (err) { console.error(err); toast("Couldn't load your saved data. Please refresh the page.", "error"); }
+try { load(); dueReminder(); } catch (err) { console.error(err); toast("Couldn't load your saved data. Please refresh the page.", "error"); }
 setTimeout(() => document.body.classList.remove("intro"), 1200);
 // warm up the Excel library quietly (never blocks the page; skipped on data saver)
 window.addEventListener("load", () => setTimeout(() => {
