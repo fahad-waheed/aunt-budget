@@ -209,6 +209,66 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
 .toast.error{background:#a82a2a}
 .toast.info{background:#7a4a0b}
 
+/* ---------- tools, goal, find, charts ---------- */
+.tools2{display:grid;grid-template-columns:repeat(auto-fit,minmax(124px,1fr));gap:8px}
+.tools2 .btn{margin:0;padding:10px 8px;font-size:15px;line-height:1.2}
+.chk{display:flex;align-items:center;gap:10px;margin:10px 0 2px;font-weight:700;min-height:44px;cursor:pointer}
+.chk input{width:24px;height:24px;min-height:0;margin:0;flex:none;box-shadow:none;accent-color:#1f7a45}
+.goalhead{display:flex;align-items:center;gap:8px}
+.gstage{font-size:28px;line-height:1}
+.gname{font-size:18px;font-weight:800;min-width:0;overflow-wrap:anywhere}
+.goalbar i{background:linear-gradient(90deg,#f6c453,#e0a030);box-shadow:0 0 12px rgba(224,160,48,.6)}
+.gbig{font-size:22px;font-weight:800;margin:6px 0;overflow-wrap:anywhere}
+.gbig small{font-size:14px;color:var(--soft);font-weight:700}
+.soft{color:var(--soft)}
+input[type=search]{-webkit-appearance:none;appearance:none}
+.findrow{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:8px}
+.findinfo{margin:4px 0 0;font-size:13px;color:var(--soft)}
+.dialog.wide{max-width:540px}
+.dialog h4{margin:16px 0 4px;font-size:16px}
+.sumtbl{width:100%;border-collapse:collapse;margin:6px 0;table-layout:auto}
+.sumtbl td,.sumtbl th{padding:6px 4px;border-bottom:1px solid #d3e6cd;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.sumtbl td:last-child,.sumtbl th:last-child{text-align:right}
+.sumtbl th{font-size:12px;text-transform:uppercase;letter-spacing:.3px;color:var(--soft)}
+.cmp td:nth-child(n+2),.cmp th:nth-child(n+2){text-align:right}
+.up{color:var(--bad);font-weight:800}
+.down{color:var(--good);font-weight:800}
+.donut{display:block;width:min(220px,100%);height:auto;margin:6px auto}
+.dt1{font-size:11px;fill:#4f6f5a}
+.dt2{font-size:17px;font-weight:800;fill:#10321f}
+.legend{list-style:none;padding:0!important;margin:6px 0}
+.legend li{display:flex;align-items:center;gap:8px;padding:4px 0;margin:0}
+.legend .sw{width:14px;height:14px;border-radius:4px;flex:none}
+.legend .ln{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.legend .lv{flex:none;max-width:55%;text-align:right;font-weight:700;overflow-wrap:anywhere}
+.bars{display:block;width:100%;height:auto}
+.bars text{font-size:10px;fill:#10321f}
+.keyrow{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--soft);margin:2px 0}
+.keyrow i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+
+/* printable report (shown only when printing / saving as PDF) */
+#report{display:none}
+@media print{
+  @page{margin:14mm}
+  html,body{background:#fff!important;overflow:visible!important;min-height:0!important}
+  .wrap,.bg,.modal,.toast,noscript{display:none!important}
+  #report{display:block!important;color:#000;font:13px/1.4 "Segoe UI",system-ui,sans-serif}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #report h1{font-size:22px;margin:0 0 2px}
+  #report h2{font-size:16px;margin:18px 0 6px;border-bottom:2px solid #1f7a45;padding-bottom:3px}
+  #report h3{font-size:14px;margin:14px 0 4px;break-after:avoid}
+  #report h3 small{font-weight:400;color:#444}
+  #report h4{font-size:14px;margin:14px 0 4px}
+  #report .rmeta{color:#555;margin:0 0 8px}
+  #report table{width:100%;border-collapse:collapse}
+  #report tr{break-inside:avoid}
+  #report th,#report td{border-bottom:1px solid #ccc;padding:4px 6px;text-align:left}
+  #report td:last-child,#report th:last-child{text-align:right}
+  #report .cmp td:nth-child(n+2),#report .cmp th:nth-child(n+2){text-align:right}
+  #report .donut{width:180px}
+  #report .legend li{padding:2px 0}
+}
+
 /* ---------- phones ---------- */
 @media(max-width:600px){
   .hero{grid-template-columns:minmax(0,1fr);justify-items:center;gap:8px}
@@ -284,6 +344,7 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
           <p class="msg" id="msg">Set your budget to plant your seed 🌱</p>
           <div class="tot">
             <div><small>Budget</small><b id="tB">Rs 0</b></div>
+            <div id="boxI" hidden><small>Income</small><b id="tI">Rs 0</b></div>
             <div><small>Spent</small><b id="tS">Rs 0</b></div>
             <div><small>Unpaid bills</small><b id="tP">Rs 0</b></div>
             <div><small>Left</small><b id="tL">Rs 0</b></div>
@@ -304,6 +365,25 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
       <div id="billsList"></div>
     </section>
 
+    <!-- Savings goal -->
+    <section class="card" id="goalCard" data-tilt hidden aria-label="Savings goal">
+      <h2>🎯 Savings goal</h2>
+      <div id="goalBody"></div>
+      <button type="button" class="btn sm" data-act="goal">＋ Add savings</button>
+    </section>
+
+    <!-- Tools -->
+    <section class="card" data-tilt aria-label="More tools">
+      <h2>🧰 Tools</h2>
+      <div class="tools2">
+        <button type="button" class="btn sec" data-act="summary">📊 Summary &amp; charts</button>
+        <button type="button" class="btn sec" data-act="income">💰 Income</button>
+        <button type="button" class="btn sec" data-act="goal">🎯 Savings goal</button>
+        <button type="button" class="btn sec" data-act="recurring">🔁 Recurring bills</button>
+        <button type="button" class="btn sec" data-act="pdf">🖨️ PDF report</button>
+      </div>
+    </section>
+
     <!-- Add category -->
     <section class="card" data-tilt aria-label="New category">
       <h2>🌱 New category</h2>
@@ -312,6 +392,15 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
         <input id="cb" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount for it (Rs)" aria-label="Amount for this category in rupees">
       </div>
       <button type="button" class="btn" data-act="addcat">Add category</button>
+    </section>
+
+    <!-- Search and sort -->
+    <section class="card" id="findCard" hidden aria-label="Search and sort">
+      <div class="findrow">
+        <input id="q" type="search" placeholder="🔍 Search items or categories" autocomplete="off" aria-label="Search items or categories">
+        <select id="sortSel" aria-label="Sort items"></select>
+      </div>
+      <p class="findinfo" id="findInfo" aria-live="polite"></p>
     </section>
 
     <div id="list"></div>
@@ -329,6 +418,9 @@ input.bad{border-color:var(--bad)!important;box-shadow:0 0 0 4px rgba(201,61,61,
   </footer>
 </div>
 
+<!-- Printable report (only visible when printing or saving as PDF) -->
+<div id="report" aria-hidden="true"></div>
+
 <!-- Modal -->
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="dtitle"><div class="dialog" id="dialog" tabindex="-1"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastAct" hidden></button></div>
@@ -342,6 +434,8 @@ const $ = id => document.getElementById(id);
 const PREFIX = "greenbudget:";
 const MAXAMT = 1e9;
 const CUR = "Rs";
+const REC_KEY = "greenbudget-recurring", GOAL_KEY = "greenbudget-goal", UI_KEY = "greenbudget-ui";
+const BASE_TITLE = document.title;
 const key = m => PREFIX + m;
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-3);
 const round2 = n => Math.round((+n + Number.EPSILON) * 100) / 100;
@@ -416,6 +510,34 @@ const storageOK = (function () {
 })();
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+function jget(k, dflt) { try { const r = lsGet(k); return r ? JSON.parse(r) : dflt; } catch (e) { return dflt; } }
+// recurring bills (kept for every month), savings goal and view preferences
+function normRec(r) {
+  if (!r || typeof r !== "object") return null;
+  const amount = +r.amount;
+  if (!isFinite(amount) || amount <= 0) return null;
+  return {id: String(r.id || uid()), cat: cleanName(r.cat || "Bills"), note: String(r.note || "Bill").slice(0, 60), amount: round2(amount), day: Math.min(31, Math.max(1, Math.round(+r.day || 1)))};
+}
+const loadRec = () => { const a = jget(REC_KEY, []); return Array.isArray(a) ? a.map(normRec).filter(Boolean) : []; };
+const saveRec = list => lsSet(REC_KEY, JSON.stringify(list));
+function normGoal(g) {
+  if (!g || typeof g !== "object") return null;
+  const target = +g.target;
+  if (!isFinite(target) || target <= 0) return null;
+  return {
+    name: String(g.name || "My goal").slice(0, 40), target: round2(target),
+    entries: (Array.isArray(g.entries) ? g.entries : []).filter(e => e && isFinite(+e.amount) && +e.amount !== 0)
+      .map(e => ({id: String(e.id || uid()), amount: round2(+e.amount), date: String(e.date || ""), note: String(e.note || "").slice(0, 40)}))
+  };
+}
+const loadGoal = () => normGoal(jget(GOAL_KEY, null));
+function saveGoal(g) {
+  if (g) return lsSet(GOAL_KEY, JSON.stringify(g));
+  try { localStorage.removeItem(GOAL_KEY); return true; } catch (e) { return false; }
+}
+const goalSaved = g => Math.max(0, round2(g.entries.reduce((s, e) => s + +e.amount, 0)));
+let query = "";
+let ui = Object.assign({sort: "added"}, jget(UI_KEY, {}));
 function months() {
   try { return Object.keys(localStorage).filter(k => k.indexOf(PREFIX) === 0).map(k => k.slice(PREFIX.length)).filter(m => /^\d{4}-\d{2}$/.test(m)).sort(); }
   catch (e) { return []; }
@@ -427,6 +549,8 @@ function normalize(d, m) {
   return {
     id: m,
     budget: Math.max(0, +d.budget || 0),
+    income: (Array.isArray(d.income) ? d.income : []).filter(i => i && isFinite(+i.amount) && +i.amount > 0)
+      .map(i => ({id: String(i.id || uid()), note: String(i.note || "Income").slice(0, 60), amount: round2(+i.amount), date: String(i.date || "")})),
     categories: d.categories.filter(c => c && typeof c === "object").map(c => ({
       id: String(c.id || uid()),
       name: String(c.name || "Category").slice(0, 40),
@@ -441,7 +565,8 @@ function normalize(d, m) {
           due: due,
           paid: due ? e.paid !== false : true,
           paidDate: isoOK(String(e.paidDate || "")) ? String(e.paidDate) : "",
-          carried: !!e.carried
+          carried: !!e.carried,
+          recurring: !!e.recurring
         };
       })
     }))
@@ -459,19 +584,23 @@ let curMonth = "";
 function load() {
   const m = curMonth;
   doc = readMonth(m);
+  let fresh = false;
   if (!doc) {
+    fresh = true;
     // new month: copy last month's budget and categories; unpaid bills carry over so they are never forgotten
     const prev = months().filter(x => x < m).pop();
     const p = prev ? readMonth(prev) : null;
     doc = {
       id: m,
       budget: p ? p.budget : 0,
+      income: [],
       categories: p ? p.categories.map(c => ({
         id: uid(), name: c.name, limit: c.limit,
         expenses: c.expenses.filter(e => !isPaid(e)).map(e => ({id: uid(), note: e.note, amount: e.amount, date: e.date, due: e.due, paid: false, paidDate: "", carried: true}))
       })) : []
     };
   }
+  if (fresh) applyRecurring(doc);
   $("budgetIn").value = doc.budget || "";
   render(); banner();
 }
@@ -495,7 +624,7 @@ function totals() {
   const unpaid = round2(doc.categories.reduce((s, c) => s + catUnpaid(c), 0));
   const used = round2(spent + unpaid);
   const planned = round2(doc.categories.reduce((s, c) => s + +c.limit, 0));
-  return {budget: +doc.budget, spent, unpaid, used, left: round2(doc.budget - used), planned, unplanned: round2(doc.budget - planned)};
+  return {budget: +doc.budget, income: sumAmt(doc.income || []), spent, unpaid, used, left: round2(doc.budget - used), planned, unplanned: round2(doc.budget - planned)};
 }
 function parseAmount(s) {
   s = String(s == null ? "" : s).trim().replace(",", ".");
@@ -517,6 +646,7 @@ function expRow(c, e) {
       ? '<span class="badge ' + dueInfo(e.due).cls + '">' + esc(dueInfo(e.due).text) + '</span>'
       : '<span class="badge ok">Paid' + (e.paidDate ? " " + esc(fmtDate(e.paidDate)) : "") + '</span>';
     if (e.carried) sub += ' <span class="badge">from last month</span>';
+    if (e.recurring) sub += ' <span class="badge">🔁 monthly</span>';
   } else sub = esc(fmtDate(e.date) || e.date);
   const ids = ' data-c="' + c.id + '" data-e="' + e.id + '"';
   return '<div class="exp"><span class="what">' + esc(e.note) + '<small>' + sub + '</small></span>' +
@@ -537,6 +667,9 @@ function render() {
   $("tL").className = t.left < 0 ? "neg" : "";
   $("tU").textContent = money(t.unplanned);
   $("tU").className = t.unplanned < 0 ? "neg" : "";
+  $("boxI").hidden = !(t.income > 0);
+  $("tI").textContent = money(t.income);
+  renderGoalCard();
 
   const pctUsed = t.budget > 0 ? Math.min(100, t.used / t.budget * 100) : 0;
   $("barfill").style.width = pctUsed + "%";
@@ -569,10 +702,19 @@ function render() {
   const list = $("list"), keep = {};
   list.querySelectorAll("input").forEach(i => { if (i.value) keep[i.id] = i.value; });
 
+  const view = viewCats();
+  $("findCard").hidden = !doc.categories.length;
+  if (query.trim()) {
+    const n = view.reduce((s, v) => s + v.items.length, 0);
+    $("findInfo").textContent = n + " item" + (n === 1 ? "" : "s") + " found";
+  } else $("findInfo").textContent = "";
   if (!doc.categories.length) {
     list.innerHTML = '<div class="card empty"><span class="big">🪴</span>No categories yet. Add one above, like Groceries or Electricity.</div>';
+  } else if (!view.length) {
+    list.innerHTML = '<div class="card empty"><span class="big">🔍</span>No matches for “' + esc(query.trim()) + '”.</div>';
   } else {
-    list.innerHTML = doc.categories.map(c => {
+    list.innerHTML = view.map(v => {
+      const c = v.c;
       const paid = catPaid(c), un = catUnpaid(c), used = round2(paid + un), left = round2(c.limit - used);
       const pct = c.limit > 0 ? used / c.limit * 100 : (used > 0 ? 101 : 0);
       const chip = left < 0 ? '<span class="chip over">Over by ' + money(-left) + '</span>'
@@ -589,7 +731,7 @@ function render() {
         '<div class="catnums">Budget ' + money(c.limit) + ' · Spent ' + money(paid) + (un > 0 ? ' · Unpaid ' + money(un) : '') +
           ' · Left <b class="' + (left < 0 ? "neg" : "") + '">' + money(left) + '</b></div>' +
         '<div class="bar ' + (left < 0 ? "over" : "") + '"><i style="width:' + Math.min(100, pct) + '%"></i></div>' +
-        c.expenses.map(e => expRow(c, e)).join("") +
+        v.items.map(e => expRow(c, e)).join("") +
         '<div class="addexp">' +
           '<input id="en-' + c.id + '" placeholder="What for?" maxlength="60" autocomplete="off" aria-label="What for in ' + esc(c.name) + '">' +
           '<input id="ea-' + c.id + '" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount (Rs)" aria-label="Amount in rupees for ' + esc(c.name) + '">' +
@@ -653,8 +795,11 @@ function dueReminder() {
 
 /* ---------------- modal ---------------- */
 let lastFocus = null;
-function openModal(html, focusInput) {
+let modalRefresh = null;
+function openModal(html, focusInput, wide) {
+  modalRefresh = null;
   lastFocus = document.activeElement;
+  $("dialog").className = "dialog" + (wide ? " wide" : "");
   $("dialog").innerHTML = html;
   $("modal").classList.add("on");
   document.body.classList.add("noscroll");
@@ -665,6 +810,7 @@ function closeModal() {
   $("modal").classList.remove("on");
   document.body.classList.remove("noscroll");
   $("dialog").innerHTML = "";
+  modalRefresh = null;
   if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
 }
 function wire(okFn) {
@@ -673,6 +819,10 @@ function wire(okFn) {
   if (no) no.onclick = closeModal;
 }
 $("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+// "live" modals (income, goal, recurring, summary) redraw themselves in place after every change
+function setDialog(html) { const d = $("dialog"), st = d.scrollTop; d.innerHTML = html; d.scrollTop = st; }
+function refreshModal() { if (modalRefresh && $("modal").classList.contains("on")) modalRefresh(); }
+function openLive(renderFn, wide) { openModal("", false, wide); modalRefresh = renderFn; renderFn(); }
 function openInfo(title, body) {
   openModal('<h3 id="dtitle">' + title + '</h3>' + body + '<div class="actions"><button type="button" class="btn" id="no">Close</button></div>');
   wire(null);
@@ -685,7 +835,7 @@ function undoTo(snapshot, month) {
   if (month !== curMonth) { curMonth = month; $("month").value = month; }
   doc = d;
   $("budgetIn").value = doc.budget || "";
-  if (save()) toast("Put back ✓", "success");
+  if (save()) { refreshModal(); toast("Put back ✓", "success"); }
 }
 function removedToast(msg, snapshot, month) {
   toast(msg, "success", {label: "Undo", fn: () => undoTo(snapshot, month)});
@@ -788,18 +938,26 @@ function addBill(cid) {
     '<input id="m-n" maxlength="60" placeholder="Bill name, e.g. Electricity" value="' + esc(ni.value) + '" aria-label="Bill name" autocomplete="off">' +
     '<input id="m-a" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount (Rs)" value="' + esc(ai.value) + '" aria-label="Bill amount in rupees">' +
     '<label class="lbl" for="m-d">Due date</label><input id="m-d" type="date" value="' + today() + '">' +
+    '<label class="chk"><input type="checkbox" id="m-r"><span>🔁 Repeat every month</span></label>' +
     '<div class="actions"><button type="button" class="btn" id="ok">Add bill</button><button type="button" class="btn sec" id="no">Cancel</button></div>', true);
   wire(() => {
     const nI = $("m-n"), aI = $("m-a"), dI = $("m-d");
+    const rep = !!($("m-r") && $("m-r").checked);
     const amt = parseAmount(aI.value);
     if (amt === null || amt <= 0) return bad(aI, "Please enter the bill amount (more than 0).");
     if (!isoOK(dI.value)) return bad(dI, "Please pick the due date.");
     const note = (nI.value.trim() || "Bill").slice(0, 60);
     const beforeLeft = totals().left, beforeCat = round2(c.limit - catUsed(c));
-    c.expenses.push({id: uid(), note: note, amount: amt, date: today(), due: dI.value, paid: false, paidDate: "", carried: false});
+    const dueVal = dI.value;
+    c.expenses.push({id: uid(), note: note, amount: amt, date: today(), due: dueVal, paid: false, paidDate: "", carried: false, recurring: false});
+    if (rep) {
+      const list = loadRec().filter(r => !(r.cat.toLowerCase() === c.name.toLowerCase() && r.note.toLowerCase() === note.toLowerCase()));
+      list.push({id: uid(), cat: c.name, note: note, amount: amt, day: parseISO(dueVal).getDate()});
+      saveRec(list);
+    }
     ni.value = ai.value = "";
     closeModal();
-    settle(c, beforeLeft, beforeCat, "Bill “" + note + "” added.");
+    settle(c, beforeLeft, beforeCat, "Bill “" + note + "” added." + (rep ? " It will repeat every month 🔁." : ""));
   });
 }
 function editExp(cid, eid) {
@@ -856,6 +1014,12 @@ function exportExcel(m) {
   });
   rows.push([], ["Monthly budget (Rs)", +d.budget], ["Paid so far (Rs)", round2(spent)], ["Unpaid bills (Rs)", round2(unpaid)],
     ["Left (Rs)", round2(d.budget - spent - unpaid)], ["Planned in categories (Rs)", round2(planned)]);
+  const inc = d.income || [];
+  if (inc.length) {
+    rows.push([], ["Income", "", "Source", "Amount (Rs)", "Date"]);
+    inc.forEach(i => rows.push(["", "", i.note, +i.amount, i.date]));
+    rows.push(["Total income (Rs)", sumAmt(inc)]);
+  }
   toast("Preparing your Excel file…", "info");
   loadXlsx().then(() => {
     const ws = XLSX.utils.aoa_to_sheet(rows);
@@ -901,9 +1065,9 @@ function downloadCsv(rows, m) {
 /* ---------------- backup & restore ---------------- */
 function backupAll() {
   const ms = months();
-  if (!ms.length) return toast("Nothing to back up yet. Add a budget or a category first.", "error");
+  if (!ms.length && !loadGoal() && !loadRec().length) return toast("Nothing to back up yet. Add a budget or a category first.", "error");
   try {
-    const out = {app: "green-budget", version: 2, exportedAt: new Date().toISOString(), months: {}};
+    const out = {app: "green-budget", version: 3, exportedAt: new Date().toISOString(), months: {}, recurring: loadRec(), goal: loadGoal()};
     ms.forEach(m => { const d = readMonth(m); if (d) out.months[m] = d; });
     downloadBlob(new Blob([JSON.stringify(out, null, 2)], {type: "application/json"}), "green-budget-backup-" + today() + ".json");
     toast("Backup saved 💾 (" + ms.length + " month" + (ms.length > 1 ? "s" : "") + "). Keep the file somewhere safe.", "success");
@@ -929,26 +1093,252 @@ $("restoreFile").addEventListener("change", e => {
       if (d) good[m] = d;
     });
     const keys = Object.keys(good);
-    if (!keys.length) return toast("No usable months were found in that backup.", "error");
+    const recs = Array.isArray(data.recurring) ? data.recurring.map(normRec).filter(Boolean) : [];
+    const goal = normGoal(data.goal);
+    if (!keys.length && !recs.length && !goal) return toast("No usable months were found in that backup.", "error");
     const spentOf = d => round2(d.categories.reduce((s, c) => s + catUsed(c), 0));
     const items = keys.map(m => '<li><b>' + esc(mname(m)) + '</b>: ' + good[m].categories.length + ' categories, ' + money(spentOf(good[m])) + ' used ' +
-      (lsGet(key(m)) ? '<span class="chip near">replaces current</span>' : '<span class="chip">new</span>') + '</li>').join("");
+      (lsGet(key(m)) ? '<span class="chip near">replaces current</span>' : '<span class="chip">new</span>') + '</li>').join("") +
+      (recs.length ? '<li>🔁 ' + recs.length + ' recurring bill' + (recs.length > 1 ? 's' : '') + '</li>' : '') +
+      (goal ? '<li>🎯 Savings goal “' + esc(goal.name) + '”</li>' : '');
     openModal('<h3 id="dtitle">📂 Restore backup?</h3><p>This backup contains:</p><ul>' + items + '</ul>' +
       '<p>Only these months are changed. Every other month on this phone stays as it is.</p>' +
       '<div class="actions"><button type="button" class="btn" id="ok">Restore</button><button type="button" class="btn sec" id="no">Cancel</button></div>');
     wire(() => {
-      let saved = 0;
+      let saved = 0, extrasOK = true;
       keys.forEach(m => { if (lsSet(key(m), JSON.stringify(good[m]))) saved++; });
+      if (recs.length && !saveRec(recs)) extrasOK = false;
+      if (goal && !saveGoal(goal)) extrasOK = false;
       closeModal();
-      if (saved !== keys.length) return toast("Couldn't restore everything. Your browser is blocking storage.", "error");
-      curMonth = keys[keys.length - 1];
-      $("month").value = curMonth;
+      if (saved !== keys.length || !extrasOK) return toast("Couldn't restore everything. Your browser is blocking storage.", "error");
+      if (keys.length) { curMonth = keys[keys.length - 1]; $("month").value = curMonth; }
       load();
-      toast("Restored " + saved + " month" + (saved > 1 ? "s" : "") + " 🌳 Showing " + mname(curMonth), "success");
+      toast("Restored " + (keys.length ? saved + " month" + (saved > 1 ? "s" : "") : "your settings") + (recs.length || goal ? " and your extras" : "") + " 🌳" + (keys.length ? " Showing " + mname(curMonth) : ""), "success");
     });
   };
   r.readAsText(f);
 });
+
+/* ---------------- search & sort ---------------- */
+const SORTS = {added: "Order added", new: "Newest first", old: "Oldest first", high: "Highest amount", low: "Lowest amount", due: "Bills by due date"};
+function sortExp(list, mode) {
+  const a = list.slice();
+  const byDate = (x, y) => (x.date || "").localeCompare(y.date || "");
+  if (mode === "new") a.sort((x, y) => byDate(y, x));
+  else if (mode === "old") a.sort(byDate);
+  else if (mode === "high") a.sort((x, y) => y.amount - x.amount);
+  else if (mode === "low") a.sort((x, y) => x.amount - y.amount);
+  else if (mode === "due") a.sort((x, y) => ((x.due ? 0 : 1) - (y.due ? 0 : 1)) || (x.due || "").localeCompare(y.due || ""));
+  return a;
+}
+function viewCats() {
+  const q = query.trim().toLowerCase();
+  const out = [];
+  doc.categories.forEach(c => {
+    let items = c.expenses.slice();
+    if (q) {
+      const nameHit = c.name.toLowerCase().indexOf(q) >= 0;
+      if (!nameHit) items = items.filter(e => (e.note + " " + e.amount + " " + (e.date || "") + " " + fmtDate(e.date) + " " + (e.due || "") + " " + (e.due ? fmtDate(e.due) : "")).toLowerCase().indexOf(q) >= 0);
+      if (!nameHit && !items.length) return;
+    }
+    out.push({c: c, items: sortExp(items, ui.sort)});
+  });
+  return out;
+}
+
+/* ---------------- recurring bills ---------------- */
+// called when a brand-new month is opened: adds every recurring bill as an unpaid bill
+function applyRecurring(d) {
+  const list = loadRec();
+  if (!list.length) return;
+  const y = +d.id.slice(0, 4), mo = +d.id.slice(5, 7), dim = new Date(y, mo, 0).getDate();
+  list.forEach(r => {
+    let c = d.categories.find(x => x.name.toLowerCase() === r.cat.toLowerCase());
+    if (!c) { c = {id: uid(), name: r.cat, limit: r.amount, expenses: []}; d.categories.push(c); }
+    const due = d.id + "-" + pad(Math.min(r.day, dim));
+    c.expenses.push({id: uid(), note: r.note, amount: r.amount, date: due, due: due, paid: false, paidDate: "", carried: false, recurring: true});
+  });
+}
+function renderRec() {
+  const list = loadRec();
+  setDialog('<h3 id="dtitle">🔁 Recurring bills</h3><p>These are added as unpaid bills at the start of every new month.</p>' +
+    (list.length ? list.map(r =>
+      '<div class="exp"><span class="what">' + esc(r.note) + '<small>' + esc(r.cat) + ' · day ' + r.day + ' of each month</small></span>' +
+      '<span class="amt">' + money(r.amount) + '</span>' +
+      '<span class="ctl"><button type="button" class="icon" data-act="recdel" data-i="' + r.id + '" aria-label="Stop repeating ' + esc(r.note) + '">🗑️</button></span></div>').join("")
+      : '<p class="soft">No recurring bills yet.</p>') +
+    '<h4>Add one</h4>' +
+    '<input id="r-n" maxlength="60" placeholder="Bill name, e.g. Internet" autocomplete="off" aria-label="Bill name" data-enter="recadd">' +
+    '<input id="r-c" list="catlist" maxlength="40" placeholder="Category, e.g. Utilities" autocomplete="off" aria-label="Category" data-enter="recadd">' +
+    '<datalist id="catlist">' + doc.categories.map(c => '<option value="' + esc(c.name) + '"></option>').join("") + '</datalist>' +
+    '<div class="row2"><input id="r-a" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount (Rs)" aria-label="Amount in rupees" data-enter="recadd">' +
+    '<input id="r-d" type="number" inputmode="numeric" min="1" max="31" step="1" placeholder="Day (1 to 31)" aria-label="Day of the month" data-enter="recadd"></div>' +
+    '<div class="actions"><button type="button" class="btn" data-act="recadd">＋ Add recurring bill</button><button type="button" class="btn sec" data-act="close">Close</button></div>');
+}
+
+/* ---------------- income ---------------- */
+function renderIncome() {
+  const list = doc.income || [], total = sumAmt(list);
+  setDialog('<h3 id="dtitle">💰 Income · ' + esc(mname(doc.id)) + '</h3>' +
+    '<p>Money you received this month: <b>' + money(total) + '</b></p>' +
+    (list.length ? list.map(i =>
+      '<div class="exp"><span class="what">' + esc(i.note) + '<small>' + esc(fmtDate(i.date) || i.date) + '</small></span>' +
+      '<span class="amt">' + money(i.amount) + '</span>' +
+      '<span class="ctl"><button type="button" class="icon" data-act="incdel" data-i="' + i.id + '" aria-label="Remove ' + esc(i.note) + '">✕</button></span></div>').join("")
+      : '<p class="soft">Nothing added yet.</p>') +
+    '<input id="in-n" maxlength="60" placeholder="From, e.g. Salary" autocomplete="off" aria-label="Where the money came from" data-enter="incadd">' +
+    '<input id="in-a" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount (Rs)" aria-label="Income amount in rupees" data-enter="incadd">' +
+    '<div class="actions"><button type="button" class="btn" data-act="incadd">＋ Add income</button>' +
+    (total > 0 ? '<button type="button" class="btn sec" data-act="incbudget">Use as my budget</button>' : '') +
+    '<button type="button" class="btn sec" data-act="close">Close</button></div>');
+}
+
+/* ---------------- savings goal ---------------- */
+let goalEdit = false;
+const stage = pct => pct >= 100 ? "🎉" : pct >= 75 ? "🌳" : pct >= 50 ? "🪴" : pct >= 25 ? "🌿" : "🌱";
+function renderGoalCard() {
+  const g = loadGoal(), card = $("goalCard");
+  if (!g) { card.hidden = true; return; }
+  const saved = goalSaved(g), pct = Math.min(100, saved / g.target * 100);
+  card.hidden = false;
+  $("goalBody").innerHTML = '<div class="goalhead"><span class="gstage" aria-hidden="true">' + stage(pct) + '</span><span class="gname">' + esc(g.name) + '</span></div>' +
+    '<div class="catnums">' + money(saved) + ' of ' + money(g.target) + ' · ' + Math.floor(pct) + '%' +
+    (saved >= g.target ? ' · Goal reached 🎉' : ' · ' + money(g.target - saved) + ' to go') + '</div>' +
+    '<div class="bar goalbar"><i style="width:' + pct + '%"></i></div>';
+}
+function renderGoal() {
+  const g = loadGoal();
+  if (!g || goalEdit) {
+    setDialog('<h3 id="dtitle">🎯 ' + (g ? "Edit goal" : "Savings goal") + '</h3>' +
+      (g ? '' : '<p>Pick something to save for. Your plant grows as you save.</p>') +
+      '<input id="g-n" maxlength="40" placeholder="What are you saving for? e.g. New phone" value="' + esc(g ? g.name : "") + '" autocomplete="off" aria-label="What are you saving for" data-enter="goalcreate">' +
+      '<input id="g-t" type="number" inputmode="decimal" min="0" step="any" placeholder="Target amount (Rs)" value="' + (g ? g.target : "") + '" aria-label="Target amount in rupees" data-enter="goalcreate">' +
+      '<div class="actions"><button type="button" class="btn" data-act="goalcreate">' + (g ? "Save" : "Create goal") + '</button>' +
+      (g ? '<button type="button" class="btn sec" data-act="goalcancel">Cancel</button>' : '<button type="button" class="btn sec" data-act="close">Close</button>') + '</div>');
+    return;
+  }
+  const saved = goalSaved(g), pct = Math.min(100, saved / g.target * 100);
+  const recent = g.entries.slice(-5).reverse();
+  setDialog('<h3 id="dtitle">🎯 ' + esc(g.name) + '</h3>' +
+    '<p class="gbig">' + stage(pct) + ' ' + money(saved) + ' <small>of ' + money(g.target) + '</small></p>' +
+    '<div class="bar goalbar"><i style="width:' + pct + '%"></i></div>' +
+    '<p class="soft">' + (saved >= g.target ? 'Goal reached! 🎉' : money(g.target - saved) + ' to go (' + Math.floor(pct) + '%)') + '</p>' +
+    '<input id="g-a" type="number" inputmode="decimal" min="0" step="any" placeholder="Amount (Rs)" aria-label="Amount in rupees" data-enter="goaladd">' +
+    '<div class="actions"><button type="button" class="btn" data-act="goaladd">＋ Add savings</button><button type="button" class="btn sec" data-act="goalout">− Take out</button></div>' +
+    (recent.length ? '<h4>Recent</h4>' + recent.map(e =>
+      '<div class="exp"><span class="what">' + (e.amount < 0 ? 'Taken out' : 'Saved') + '<small>' + esc(fmtDate(e.date) || e.date) + '</small></span>' +
+      '<span class="amt">' + (e.amount < 0 ? '−' : '+') + money(Math.abs(e.amount)) + '</span>' +
+      '<span class="ctl"><button type="button" class="icon" data-act="goalentdel" data-i="' + e.id + '" aria-label="Remove this entry">✕</button></span></div>').join("") : '') +
+    '<div class="actions"><button type="button" class="btn sec" data-act="goaledit">Edit goal</button><button type="button" class="btn warn" data-act="goalremove">Remove goal</button><button type="button" class="btn sec" data-act="close">Close</button></div>');
+}
+
+/* ---------------- summary, charts and PDF report ---------------- */
+const PAL = ["#1f7a45", "#e0a030", "#3a7ca5", "#c2553d", "#7a5aa6", "#2aa198", "#a3a33a", "#d46a9a", "#6d6d6d", "#8c5a2b"];
+const compact = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, "") + "k" : String(Math.round(n));
+const monthShort = m => new Date(+m.slice(0, 4), +m.slice(5, 7) - 1, 1).toLocaleDateString(undefined, {month: "short"});
+function monthStats(d) {
+  const cats = d.categories.map(c => ({name: c.name, limit: +c.limit, paid: catPaid(c), unpaid: catUnpaid(c), used: catUsed(c)}));
+  const spent = round2(cats.reduce((s, c) => s + c.paid, 0)), unpaid = round2(cats.reduce((s, c) => s + c.unpaid, 0));
+  const used = round2(spent + unpaid);
+  return {cats: cats, spent: spent, unpaid: unpaid, used: used, income: sumAmt(d.income || []), budget: +d.budget,
+    left: round2(d.budget - used), items: d.categories.reduce((n, c) => n + c.expenses.length, 0)};
+}
+function donutSVG(cats, total) {
+  const r = 54, C = 2 * Math.PI * r;
+  let off = 0, parts = "";
+  cats.forEach((c, i) => {
+    const len = c.used / total * C;
+    parts += '<circle cx="80" cy="80" r="' + r + '" fill="none" stroke="' + PAL[i % PAL.length] + '" stroke-width="28" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) +
+      '" stroke-dashoffset="' + (-off).toFixed(2) + '" transform="rotate(-90 80 80)"><title>' + esc(c.name) + ': ' + money(c.used) + '</title></circle>';
+    off += len;
+  });
+  return '<svg class="donut" viewBox="0 0 160 160" role="img" aria-label="Where the money goes, by category">' + parts +
+    '<text x="80" y="76" text-anchor="middle" class="dt1">Total</text><text x="80" y="95" text-anchor="middle" class="dt2">' + esc(compact(total)) + '</text></svg>';
+}
+function legendHTML(cats, total) {
+  return '<ul class="legend">' + cats.map((c, i) =>
+    '<li><span class="sw" style="background:' + PAL[i % PAL.length] + '"></span><span class="ln">' + esc(c.name) + '</span><span class="lv">' + money(c.used) + ' · ' + Math.round(c.used / total * 100) + '%</span></li>').join("") + '</ul>';
+}
+function monthsData() {
+  let list = months().filter(m => m <= doc.id);
+  if (list.indexOf(doc.id) < 0) list.push(doc.id);
+  return list.slice(-6).map(m => { const d = m === doc.id ? doc : readMonth(m); const s = d ? monthStats(d) : {used: 0, budget: 0}; return {m: m, used: s.used, budget: s.budget}; });
+}
+function barsSVG(data) {
+  const W = 260, H = 170, top = 20, bottom = 24, ch = H - top - bottom;
+  const max = Math.max.apply(null, [1].concat(data.map(x => Math.max(x.used, x.budget))));
+  const gw = W / data.length, bw = Math.min(16, gw / 2 - 3);
+  let g = "";
+  data.forEach((x, i) => {
+    const cx = gw * i + gw / 2, hb = ch * x.budget / max, hu = ch * x.used / max;
+    const over = x.budget > 0 && x.used > x.budget;
+    g += '<rect x="' + (cx - bw - 1).toFixed(1) + '" y="' + (top + ch - hb).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + hb.toFixed(1) + '" rx="3" fill="#b9dcb1"><title>' + esc(mname(x.m)) + ' budget: ' + money(x.budget) + '</title></rect>';
+    g += '<rect x="' + (cx + 1).toFixed(1) + '" y="' + (top + ch - hu).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + hu.toFixed(1) + '" rx="3" fill="' + (over ? "#c93d3d" : "#1f7a45") + '"><title>' + esc(mname(x.m)) + ' used: ' + money(x.used) + '</title></rect>';
+    g += '<text x="' + (cx + 1 + bw / 2).toFixed(1) + '" y="' + (top + ch - hu - 4).toFixed(1) + '" text-anchor="middle">' + esc(compact(x.used)) + '</text>';
+    g += '<text x="' + cx.toFixed(1) + '" y="' + (H - 7) + '" text-anchor="middle">' + esc(monthShort(x.m)) + '</text>';
+  });
+  return '<svg class="bars" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Budget and spending for each month">' +
+    '<line x1="0" y1="' + (top + ch) + '" x2="' + W + '" y2="' + (top + ch) + '" stroke="#b9dcb1" stroke-width="1"/>' + g + '</svg>';
+}
+function summaryInner() {
+  const s = monthStats(doc);
+  const pm = months().filter(x => x < doc.id).pop();
+  const pd = pm ? readMonth(pm) : null, ps = pd ? monthStats(pd) : null;
+  const ranked = s.cats.filter(c => c.used > 0).sort((a, b) => b.used - a.used);
+  let h = '<table class="sumtbl"><tbody>' +
+    '<tr><td>Budget</td><td>' + money(s.budget) + '</td></tr>' +
+    '<tr><td>Spent (paid)</td><td>' + money(s.spent) + '</td></tr>' +
+    '<tr><td>Unpaid bills</td><td>' + money(s.unpaid) + '</td></tr>' +
+    '<tr><td><b>Left</b></td><td class="' + (s.left < 0 ? "up" : "") + '"><b>' + money(s.left) + '</b></td></tr>' +
+    (s.income > 0 ? '<tr><td>Income</td><td>' + money(s.income) + '</td></tr><tr><td>Income minus spending</td><td>' + money(round2(s.income - s.used)) + '</td></tr>' : '') +
+    '<tr><td>Items recorded</td><td>' + s.items + '</td></tr></tbody></table>';
+  if (ranked.length) {
+    const top = ranked[0];
+    h += '<p>🏆 Biggest category: <b>' + esc(top.name) + '</b>, ' + money(top.used) + ' (' + Math.round(top.used / s.used * 100) + '% of everything)</p>';
+    const days = doc.id === thisMonth() ? new Date().getDate() : new Date(+doc.id.slice(0, 4), +doc.id.slice(5, 7), 0).getDate();
+    if (s.spent > 0) h += '<p>📆 About <b>' + money(round2(s.spent / days)) + '</b> spent per day.</p>';
+    h += '<h4>Where the money goes</h4>' + donutSVG(ranked, s.used) + legendHTML(ranked, s.used);
+  } else h += '<p class="soft">Nothing recorded yet this month, so there is nothing to chart.</p>';
+  const data = monthsData();
+  h += '<h4>Month by month</h4><div class="keyrow"><span><i style="background:#b9dcb1"></i>Budget</span><span><i style="background:#1f7a45"></i>Used</span><span><i style="background:#c93d3d"></i>Over budget</span></div>' +
+    barsSVG(data) + '<ul>' + data.map(x => '<li>' + esc(mname(x.m)) + ': ' + money(x.used) + ' used of ' + money(x.budget) + '</li>').join("") + '</ul>';
+  h += '<h4>Compared with ' + (pm ? esc(mname(pm)) : 'last month') + '</h4>';
+  if (!ps) h += '<p class="soft">There is no earlier month to compare with yet.</p>';
+  else {
+    const delta = round2(s.used - ps.used), pct = ps.used > 0 ? Math.round(Math.abs(delta) / ps.used * 100) : null;
+    h += '<p>' + (delta === 0 ? 'Exactly the same as ' : '<b class="' + (delta > 0 ? "up" : "down") + '">' + (delta > 0 ? '▲ ' : '▼ ') + money(Math.abs(delta)) + (pct !== null ? ' (' + pct + '%)' : '') + '</b> ' + (delta > 0 ? 'more' : 'less') + ' than ') +
+      esc(mname(pm)) + ' (' + money(ps.used) + ').</p>';
+    const names = [];
+    s.cats.concat(ps.cats).forEach(c => { if (names.indexOf(c.name.toLowerCase()) < 0) names.push(c.name.toLowerCase()); });
+    const get = (st, n) => st.cats.find(c => c.name.toLowerCase() === n);
+    const rows = names.map(n => {
+      const a = get(s, n), b = get(ps, n), now = a ? a.used : 0, was = b ? b.used : 0, diff = round2(now - was);
+      if (!now && !was) return "";
+      return '<tr><td>' + esc((a || b).name) + '</td><td>' + compact(now) + '</td><td>' + compact(was) + '</td><td>' +
+        (diff === 0 ? '–' : '<span class="' + (diff > 0 ? "up" : "down") + '">' + (diff > 0 ? '▲ ' : '▼ ') + compact(Math.abs(diff)) + '</span>') + '</td></tr>';
+    }).join("");
+    if (rows) h += '<table class="sumtbl cmp"><thead><tr><th>Category</th><th>This</th><th>Last</th><th>Change</th></tr></thead><tbody>' + rows + '</tbody></table><p class="soft">Amounts in Rs (k = thousand).</p>';
+  }
+  return h;
+}
+function renderSummary() {
+  setDialog('<h3 id="dtitle">📊 Summary · ' + esc(mname(doc.id)) + '</h3>' + summaryInner() +
+    '<div class="actions"><button type="button" class="btn" data-act="pdf">🖨️ PDF report</button><button type="button" class="btn sec" data-act="close">Close</button></div>');
+}
+function reportHTML() {
+  let h = '<h1>🌿 Green Budget · ' + esc(mname(doc.id)) + '</h1><p class="rmeta">Report created ' + esc(fmtDate(today())) + '</p>' + summaryInner() + '<h2>Details by category</h2>';
+  h += doc.categories.map(c => {
+    const used = catUsed(c);
+    return '<h3>' + esc(c.name) + ' <small>Budget ' + money(c.limit) + ' · Used ' + money(used) + ' · Left ' + money(round2(c.limit - used)) + '</small></h3>' +
+      (c.expenses.length ? '<table class="rtbl"><thead><tr><th>Item</th><th>Date / due</th><th>Status</th><th>Amount</th></tr></thead><tbody>' +
+        c.expenses.map(e => '<tr><td>' + esc(e.note) + (e.recurring ? ' 🔁' : '') + '</td><td>' + esc(fmtDate(e.due || e.date) || (e.due || e.date)) + '</td><td>' + (e.due ? (isPaid(e) ? 'Paid' : 'Unpaid') : 'Paid') + '</td><td>' + money(e.amount) + '</td></tr>').join("") +
+        '</tbody></table>' : '<p class="rmeta">No items.</p>');
+  }).join("");
+  const inc = doc.income || [];
+  if (inc.length) h += '<h2>Income</h2><table class="rtbl"><thead><tr><th>From</th><th>Date</th><th>Amount</th></tr></thead><tbody>' +
+    inc.map(i => '<tr><td>' + esc(i.note) + '</td><td>' + esc(fmtDate(i.date) || i.date) + '</td><td>' + money(i.amount) + '</td></tr>').join("") + '</tbody></table>';
+  return h;
+}
 
 /* ---------------- footer info ---------------- */
 const HOW = '<ol><li>Type your monthly budget and tap <b>Save budget</b>.</li>' +
@@ -957,6 +1347,8 @@ const HOW = '<ol><li>Type your monthly budget and tap <b>Save budget</b>.</li>' 
   '<li>Bills show in <b>Bills to pay</b> at the top with their due dates. Tap <b>✓ Paid</b> when you pay one.</li>' +
   '<li>Tap ✏️ on an item to fix it. If you remove something by mistake, tap <b>Undo</b> straight away.</li>' +
   '<li>If you go over, the plant wilts and you can change the budget.</li>' +
+  '<li>Open <b>Tools</b> for your Income, a Savings goal, Recurring bills, the Summary with charts, and a PDF report.</li>' +
+  '<li>Use the search box to find an item, and the sort list to order your items.</li>' +
   '<li>At the end of the month tap <b>Excel</b> or <b>Backup</b> to keep a copy.</li></ol>' +
   '<p>Unpaid bills count against your budget right away, so <b>Left</b> shows what you can still spend after paying them. Bills you have not paid by the end of the month move to the next month.</p>';
 const PRIVACY = '<p>Green Budget has no accounts and no server. Everything you type is saved <b>only in this browser on this device</b>, and nothing is sent anywhere.</p>' +
@@ -1021,7 +1413,121 @@ const ACT = {
   editexp(b) { editExp(b.dataset.c, b.dataset.e); },
   togglepaid(b) { togglePaid(b.dataset.c, b.dataset.e); },
   delcat(b) { delCat(b.dataset.c); },
-  delexp(b) { delExp(b.dataset.c, b.dataset.e); }
+  delexp(b) { delExp(b.dataset.c, b.dataset.e); },
+  close() { closeModal(); },
+
+  /* income */
+  income() { openLive(renderIncome); },
+  incadd() {
+    const ni = $("in-n"), ai = $("in-a"), amt = parseAmount(ai.value);
+    if (amt === null || amt <= 0) return bad(ai, "Please enter the amount you received (more than 0).");
+    const note = (ni.value.trim() || "Income").slice(0, 60);
+    if (!doc.income) doc.income = [];
+    doc.income.push({id: uid(), note: note, amount: amt, date: today()});
+    if (!save()) return;
+    refreshModal();
+    toast("Added income “" + note + "”: " + money(amt) + " 💰", "success");
+  },
+  incdel(b) {
+    const i = (doc.income || []).find(x => x.id === b.dataset.i);
+    if (!i) return;
+    const snap = JSON.stringify(doc), month = doc.id;
+    doc.income = doc.income.filter(x => x.id !== i.id);
+    if (save()) { refreshModal(); removedToast("Removed income “" + i.note + "”", snap, month); }
+  },
+  incbudget() {
+    const t = sumAmt(doc.income || []);
+    if (t <= 0) return;
+    doc.budget = t; $("budgetIn").value = t;
+    if (save()) { refreshModal(); toast("Your budget is now your income: " + money(t) + " 🌱", "success"); }
+  },
+
+  /* savings goal */
+  goal() { goalEdit = false; openLive(renderGoal); },
+  goaledit() { goalEdit = true; refreshModal(); },
+  goalcancel() { goalEdit = false; refreshModal(); },
+  goalcreate() {
+    const ni = $("g-n"), ti = $("g-t"), name = cleanName(ni.value), target = parseAmount(ti.value);
+    if (!name) return bad(ni, "Please say what you are saving for, like New phone.");
+    if (target === null || target <= 0) return bad(ti, "Please enter the target amount (more than 0).");
+    const old = loadGoal();
+    if (!saveGoal({name: name, target: target, entries: old ? old.entries : []})) return toast("Couldn't save the goal. Your browser is blocking storage.", "error");
+    goalEdit = false; render(); refreshModal();
+    toast(old ? "Goal updated 🎯" : "Goal created 🎯 Add your first savings when you are ready.", "success");
+  },
+  goaladd() {
+    const g = loadGoal();
+    if (!g) return;
+    const ai = $("g-a"), amt = parseAmount(ai.value);
+    if (amt === null || amt <= 0) return bad(ai, "Please enter how much you saved (more than 0).");
+    const before = goalSaved(g);
+    g.entries.push({id: uid(), amount: amt, date: today(), note: ""});
+    if (!saveGoal(g)) return toast("Couldn't save. Your browser is blocking storage.", "error");
+    render(); refreshModal();
+    if (before < g.target && goalSaved(g) >= g.target) toast("You reached your goal “" + g.name + "”! 🎉", "success");
+    else toast("Added " + money(amt) + " to “" + g.name + "” 🌱", "success");
+  },
+  goalout() {
+    const g = loadGoal();
+    if (!g) return;
+    const ai = $("g-a"), amt = parseAmount(ai.value), have = goalSaved(g);
+    if (amt === null || amt <= 0) return bad(ai, "Please enter how much you took out (more than 0).");
+    if (amt > have) return bad(ai, "You only have " + money(have) + " saved in this goal.");
+    g.entries.push({id: uid(), amount: -amt, date: today(), note: "Taken out"});
+    if (!saveGoal(g)) return toast("Couldn't save. Your browser is blocking storage.", "error");
+    render(); refreshModal();
+    toast("Took " + money(amt) + " out of “" + g.name + "”.", "success");
+  },
+  goalentdel(b) {
+    const g = loadGoal();
+    if (!g) return;
+    const snap = lsGet(GOAL_KEY);
+    g.entries = g.entries.filter(e => e.id !== b.dataset.i);
+    if (!saveGoal(g)) return;
+    render(); refreshModal();
+    toast("Entry removed", "success", {label: "Undo", fn: () => { lsSet(GOAL_KEY, snap); render(); refreshModal(); toast("Put back ✓", "success"); }});
+  },
+  goalremove() {
+    const snap = lsGet(GOAL_KEY);
+    if (!snap) return;
+    saveGoal(null); goalEdit = false; render(); refreshModal();
+    toast("Goal removed", "success", {label: "Undo", fn: () => { lsSet(GOAL_KEY, snap); render(); refreshModal(); toast("Goal is back 🎯", "success"); }});
+  },
+
+  /* recurring bills */
+  recurring() { openLive(renderRec); },
+  recadd() {
+    const ni = $("r-n"), ci = $("r-c"), ai = $("r-a"), di = $("r-d");
+    const note = (ni.value.trim() || "Bill").slice(0, 60), cat = cleanName(ci.value);
+    if (!cat) return bad(ci, "Please choose or type a category, like Utilities.");
+    const amt = parseAmount(ai.value);
+    if (amt === null || amt <= 0) return bad(ai, "Please enter the bill amount (more than 0).");
+    const day = Math.round(Number(di.value));
+    if (di.value === "" || !isFinite(day) || day < 1 || day > 31) return bad(di, "Please enter the day of the month, from 1 to 31.");
+    const list = loadRec().filter(r => !(r.cat.toLowerCase() === cat.toLowerCase() && r.note.toLowerCase() === note.toLowerCase()));
+    list.push({id: uid(), cat: cat, note: note, amount: amt, day: day});
+    if (!saveRec(list)) return toast("Couldn't save. Your browser is blocking storage.", "error");
+    refreshModal();
+    toast("“" + note + "” will be added as an unpaid bill on day " + day + " of every new month 🔁", "success");
+  },
+  recdel(b) {
+    const snap = lsGet(REC_KEY), r = loadRec().find(x => x.id === b.dataset.i);
+    if (!r) return;
+    saveRec(loadRec().filter(x => x.id !== r.id));
+    refreshModal();
+    toast("“" + r.note + "” will no longer repeat", "success", {label: "Undo", fn: () => { lsSet(REC_KEY, snap); refreshModal(); toast("Put back ✓", "success"); }});
+  },
+
+  /* summary, charts, PDF */
+  summary() { openLive(renderSummary, true); },
+  pdf() {
+    if (typeof window.print !== "function") return toast("Printing isn't available in this browser. Please open the site in Chrome or Samsung Internet.", "error");
+    $("report").innerHTML = reportHTML();
+    closeModal();
+    document.title = "Green Budget " + doc.id;
+    toast("Opening the print screen. Choose “Save as PDF” as the printer.", "info");
+    setTimeout(() => { try { window.print(); } catch (e) { toast("Couldn't open the print screen on this browser.", "error"); } }, 600);
+  }
 };
 function run(name, el) {
   const fn = ACT[name];
@@ -1040,7 +1546,12 @@ document.addEventListener("keydown", e => {
   if (e.key !== "Enter") return;
   const t = e.target;
   if (!t || t.tagName !== "INPUT" || t.type === "month" || t.type === "file") return;
-  if (modalOn) { const ok = $("ok"); if (ok) { e.preventDefault(); ok.click(); } return; }
+  if (modalOn) {
+    const ok = $("ok");
+    if (ok) { e.preventDefault(); ok.click(); }
+    else if (t.dataset && t.dataset.enter) { e.preventDefault(); run(t.dataset.enter); }
+    return;
+  }
   const id = t.id;
   if (id === "budgetIn") run("budget");
   else if (id === "cn" || id === "cb") run("addcat");
@@ -1117,6 +1628,11 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
 /* ---------------- start ---------------- */
 curMonth = thisMonth();
 $("month").value = curMonth;
+$("sortSel").innerHTML = Object.keys(SORTS).map(k => '<option value="' + k + '">' + SORTS[k] + '</option>').join("");
+$("sortSel").value = SORTS[ui.sort] ? ui.sort : "added";
+$("sortSel").addEventListener("change", () => { ui.sort = $("sortSel").value; lsSet(UI_KEY, JSON.stringify(ui)); render(); });
+$("q").addEventListener("input", () => { query = $("q").value; render(); });
+window.addEventListener("afterprint", () => { document.title = BASE_TITLE; });
 notices();
 if (standalone()) $("fInstall").hidden = true;
 if (navigator.storage && navigator.storage.persist) { try { navigator.storage.persist(); } catch (e) {} }

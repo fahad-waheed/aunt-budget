@@ -1,7 +1,7 @@
 "use strict";
 // Green Budget service worker: makes the app open instantly and work offline.
 // Change VERSION whenever you want every phone to drop its old cache.
-const VERSION = "gb-v3";
+const VERSION = "gb-v4";
 const CORE = ["/", "/index.html", "/404.html", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png"];
 const XLSX_URL = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
 
